@@ -40,7 +40,8 @@
 							::NAME:: est un logiciel en ligne de gestion d'achats groupés.<br/>
 							Il est conçu pour les groupes déjà existants. Si vous cherchez une AMAP dans votre région, 
 							faites une recherche dans l'annuaire national des AMAP : <br/>
-							<a href="http://www.reseau-amap.org/recherche-amap.php" class="btn btn-default btn-sm" target="_blank">Annuaire des AMAP</a>
+							<a href="http://www.reseau-amap.org/recherche-amap.php" class="btn btn-default btn-sm" target="_blank">Annuaire des AMAP</a> 
+							ou sur <a href="http://app.cagette.net/p/hosted/book?dept=33" class="btn btn-default btn-sm"  target="_blank">l'annuaire des comptes Cagette</a> 
 							
 						</p>
 					</li>

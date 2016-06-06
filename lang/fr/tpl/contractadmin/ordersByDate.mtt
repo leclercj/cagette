@@ -1,0 +1,150 @@
+::use 'design.mtt'::
+
+<style>
+
+	table tr td{
+		white-space: nowrap;
+	}
+
+</style>
+
+
+
+	<div class="col-md-12">
+		<div class="article">
+			
+			
+			
+		<h3>Vue globale des commandes - livraison du ::hDate(date)::</h3>
+		
+
+		<a href="/distribution/listByDate/::date.toString().substr(0,10)::/csv" class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-list-alt"></span> Export CSV </a>
+		<a href="/distribution/listByDate/::date.toString().substr(0,10)::" class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-print"></span> Liste d'émargement</a>
+		
+		::if ctotal::
+		<a href="/contractAdmin/ordersByDate/::date.toString().substr(0,10)::" class="btn btn-default btn-sm">Afficher totaux par adhérent</a>
+		::else::
+		<a href="/contractAdmin/ordersByDate/::date.toString().substr(0,10)::?ctotal=1" class="btn btn-default btn-sm">Afficher totaux par contrat</a>
+		::end::
+			
+		<hr/>
+		
+		<table class="table table-bordered table-hover table-condensed"  style="width:100%;">
+			
+			::set total = 0:: <!-- big total -->
+			::set subtotal = 0:: <!-- total per user -->
+			::set contractTotal = 0:: <!-- total per contract -->
+			
+			::foreach m orders::
+				
+				::set i = repeat.m.index::
+				
+				<!-- name change -->
+				::if orders[i-1]==null || m.userName != orders[i-1].userName::
+				
+					<tr style="background-color:#666;">
+						<td colspan="9" style="font-size:120%;color:#e7e7e7;">
+							::m.userName:: 
+							::set contractTotal = 0::
+						</td>
+					</tr>
+					<tr>
+						<th>Contrat</th>
+						<th>Qté</th>
+						<th>Réf.</th>
+						<th>Produit</th>
+						<th><a href="#" data-toggle="tooltip" data-placement="top" title="Prix unitaire TTC">P.U</a></th>
+						<th>Sous-total</th>
+						<th>Frais</th>
+						<th>Total</th>
+						<th>Payé</th>
+					</tr>
+			
+				::end::
+				
+				<!-- 1 order line -->
+				<tr>
+					<td>
+						<a href="/contractAdmin/view/::m.contractId::">::m.contractName::</a>
+					</td>
+					<td>
+						::m.quantity:
+					</td>
+					<td>
+						$$nullSafe(::m.productRef::)
+					</td>
+					<td>
+						::m.productName::
+					</td>
+					<td>
+						::formatNum(m.productPrice)::&nbsp;&euro;
+					</td>
+					<td>
+						::formatNum(m.subTotal)::&nbsp;&euro;
+					</td>
+					<td>
+						<!-- frais -->
+						::if m.percentageValue!=null::
+						<a href="#" data-toggle="tooltip" data-placement="top" title="::m.percentageName:: : ::m.percentageValue:: %">
+							::formatNum(m.fees)::&nbsp;&euro;
+						</a>
+						::end::
+					</td>
+					<td>
+						<!-- total -->
+						::formatNum(m.total)::&nbsp;&euro;
+						::set total = total + m.total::
+						::set subtotal = subtotal + m.total::
+						::set contractTotal = contractTotal + m.total::
+					</td>
+					<td>
+						::if m.paid==true::
+						<span style="color:#00AA00;">Payé</span>
+						::else::
+						<span style="color:#DD0000;">Non payé</span>
+						::end::
+					</td>
+					
+				</tr>
+			
+				<!-- contract total -->
+				::if  ctotal && (orders[i+1]==null || m.contractName != orders[i+1].contractName)::
+					
+					<tr style="background:#DDD;">					
+						<th colspan="7" class="text-right">Total ::m.contractName::</th>
+						<th>::formatNum(contractTotal)::&nbsp;&euro;</th>					
+						<th></th>
+						::set contractTotal = 0::
+					</tr>
+				::end::
+			
+				<!-- member total -->
+				::if (orders[i+1]==null || m.userName != orders[i+1].userName) ::
+				
+					::if subtotal!=0:: 
+					<tr style="border-top:2px solid #AAA;">					
+						<th colspan="7" class="text-right">Total adhérent</th>
+						<th>::formatNum(subtotal)::&nbsp;&euro;</th>					
+						<th></th>
+						::set subtotal = 0::
+					</tr>
+					::end::
+				::end::
+			
+			<!-- end orders loop -->	
+			::end::
+				
+			<!-- big total -->
+			<tr style="background:#CCC;font-size:1.3em;">					
+				<th colspan="7" class="text-right">Total de toutes les commandes : </th>
+				<th>::formatNum(total)::&nbsp;&euro;</th>					
+				<th></th>
+			</tr>
+				
+
+		</table>
+	</div>
+	
+</div>
+
+::end::

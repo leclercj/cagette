@@ -54,7 +54,7 @@
 	<macro name="delete(text,url)">
 		<a href="::url::" $$confirm(Supprimer ?) class="btn btn-default btn-sm" >
 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-		::if text!=null::	
+		::if text!=null && text!=""::	
 			&nbsp;::text::
 		::end::
 		</a>
@@ -75,12 +75,14 @@
 	
 	<macro name="date(dow,d,m,y,place)">
 		<div class="dateBox" >
-			<div style="line-height:18px;background-color:#FFFFFF;color:#666;font-size:14px;font-weight:bold;text-align:center;margin-bottom:4px;border-radius:3px;">
+			<div class="box">
 				<div>::dow::</div>
 				<div style="font-size:28px;color:#990000;">::d::</div>
 				<div>::m::</div>				
 			</div>
-			<i class="icon-map-marker"></i> <a href="/place/view/::place.id::">::place::</a>
+			::if place!=null:: 
+			<span class="glyphicon glyphicon-map-marker"></span> <a href="/place/view/::place.id::">::place::</a>			
+			::end::
 		</div>		
 	</macro>
 	<macro name="today(dow,d,m,y,place)">
@@ -96,7 +98,7 @@
 				::end::
 				
 			</div>
-			<i class="icon-map-marker"></i> <a href="/place/view/::place.id::">::place.name::</a>
+			::if place!=null:: <span class="glyphicon glyphicon-map-marker"></span> <a href="/place/view/::place.id::">::place::</a> ::end::
 		</div>		
 	</macro>
 	

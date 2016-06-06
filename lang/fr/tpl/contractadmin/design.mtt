@@ -6,14 +6,13 @@
 
 <div class="col-md-3">
 	<div class="article">
-		<ul class="nav nav-pills nav-stacked">
-			<li><a href="/contractAdmin/view/::c.id::">Récapitulatif</a></li>
-			<li><a href="/contract/edit/::c.id::">Modifier contrat</a></li>
-			<li><a href="/contractAdmin/products/::c.id::">Produits</a></li>
-			<!--<li><a ::cond c.hasStockManagement():: href="/contractAdmin/stocks/::c.id::">Stocks</a></li>-->
-			<li><a href="/contractAdmin/distributions/::c.id::">Livraisons</a></li>
-			<li><a href="/contractAdmin/orders/::c.id::">Commandes</a></li>
-			<li><a href="/contractAdmin/stats/::c.id::">Statistiques</a></li>
+		<ul id="subnav" class="nav nav-pills nav-stacked">
+			<li id="default"><a href="/contractAdmin/view/::c.id::">Récapitulatif</a></li>
+			<li id="edit"><a href="/contract/edit/::c.id::">Modifier contrat</a></li>
+			<li id="products"><a href="/contractAdmin/products/::c.id::">Produits</a></li>			
+			<li id="deliveries"><a href="/contractAdmin/distributions/::c.id::">Livraisons</a></li>
+			<li id="orders"><a href="/contractAdmin/orders/::c.id::">Commandes</a></li>
+			<li id="stats"><a href="/contractAdmin/stats/::c.id::">Statistiques</a></li>
 		</ul>
 	</div>
 </div>

@@ -1,112 +1,201 @@
 ::use 'design.mtt'::
 <div class="col-md-9">
-	<div class="article">
-	<h2>Produits</h2>
-	
-	<script language="javascript">
-	var cart;
-	$(function(){
-		cart = _.getCart();
-		cart.init();
-	});
 
-	</script>
-	
-	
-	<div class="row">
-		::foreach p products::
-		<div class="col-xs-12 col-sm-6 col-lg-4" id="product::p.id::">
+	<div class="shop">
+		
+		<div class="header">
 			
-			<table class="product">
-				<tr>
-					<td style="vertical-align:top;">
-						<a onclick="_.overlay('/shop/productInfo/::p.id::')" data-toggle="tooltip" data-placement="top" title="En savoir plus"><img src="::p.image::" style="width:64px;height:64px;" />	</a>
-					</td>
-					<td>
-						<h4>
-							<a onclick="_.overlay('/shop/productInfo/::p.id::')">::p.name::</a>
-						</h4>
-						<span class="price">::formatNum(p.price):: €</span>
-											
-						<div>
-							<form class="form-inline">
-							::if p.stock!=null && p.stock==0::
-								<span style="color:#AAA;">Stock épuisé</span>
-								
-							::elseif !p.orderable::	
-							
-								<span style="color:#AAA;">Commande fermée</span>
-								
-							::else::
-								::if p.stock!=null && p.stock>0 && p.stock<=10::
-								<div style="color:#900;font-weight:bold;">Plus que ::p.stock:: en stock</div>
-								::end::
-							
-								<input id="productQt::p.id::" type="text" value="1" style="height: 22px;width:40px;" class="form-control input-sm" maxlength="4"  data-toggle="tooltip" data-placement="top" title="Quantité"/>
-								<a class="btn btn-default btn-xs" onclick="cart.add(::p.id::)">Commander</a>
-								
-							::end::
-							
-							</form>
-						</div>
-						
-						
-						
-						
-					</td>
-				</tr>
-			</table>
-			
-		</div>
-		::end::	
-	</div>
-	
-	
-	
-	
-	</div>
-</div>
-	
-<div >	
-<div class="col-md-3" id="cartContainer">
-	
-	
-		<div class="cartDiv">
-			
-			<h2>
-				<span class="glyphicon glyphicon-shopping-cart"></span>
-				Commande
-				<img id="loader" src="/img/loader.gif"/>
-			</h2>
-			<div id="cart">
-				
+			<div style="float:right;text-align:right;">
+				::if place!=null::
+				<span class="info">
+					<span class="glyphicon glyphicon-map-marker"></span> <a href="/place/view/::place.id::">::place::</a>
+				</span>
+				::end::
+
+				::if place!=null::
+					<div class="address">
+					$$nullSafe(::place.address1::)
+					$$nullSafe(::place.address2::)
+					$$nullSafe(::place.zipCode::)
+					$$nullSafe(::place.city::)
+					</div>
+				::end::
 			</div>
 			
-			<a onClick="cart.submit();" class="btn btn-default">Valider</a>
 			
-			<a class="infos" href='/contract'>Vous pouvez consulter vos commandes en cours sur votre page "mon compte"</a>
+			<div>
+				<div class="info" style="font-size:1.2em;">Livraison du ::hDate(date)::</div>
+				
+				
+				<div class="">
+					<span class="info">
+						<span class="glyphicon glyphicon-time"></span> Fermeture des commandes :
+					</span>
+					::if ArrayTool.mapLength(infos) == 1::
+						::hDate( infos.iterator().next()[0].orderEndDate )::
+						
 
-			
-		</div>
-		
-		<div class="article">
-			<span class="tag active" id="tag0" onclick="cart.filter(0);" style="cursor:pointer;"><span class="glyphicon glyphicon-ok"></span> Tout</span><br/>
-			
-			::foreach g user._amap.getCategoryGroups()::
-				<div>
-					<h4>::g.name::</h4>
-					
-					::foreach c g.getCategories()::
-						<span class="tag" id="tag::c.id::" onclick="cart.filter(::c.id::);" style="background-color: ::c.getColor()::;cursor:pointer;">::c.name::</span><br/>
+					::else::
+						<ul>
+						::foreach k infos.keys()::
+							<li>
+							::set dists = infos.get(k)::
+							
+							::if dists.length==1::
+								::dists[0]._contract.name::
+							::else::
+								::set tt = ""::
+								::foreach d dists::
+									::set tt = tt  + d._contract.name + ". "::
+								::end::
+								<span data-toggle="tooltip" title="::tt::" style="text-decoration:underline;">Autres</span>
+							::end::
+							
+							: ::hDate(Date.fromString(k))::
+							</li>
+						::end::
+						</ul>
 					::end::
 				</div>
-			::end::
+			</div>
+
+			
 			
 		</div>
-	
 		
+		<!--<table class="table table-bordered">
+				::foreach i infos::
+				<tr>
+					<td ::cond infos.length>1::>
+						::foreach c i.contracts::
+							::c.name::. 
+						::end::
+					</td>
+					<td>
+						::if i.close!=null::
+							<span class="glyphicon glyphicon-calendar"></span> Fermeture des commandes :<br/> ::hDate(i.close)::
+						::else::
+							<span class="glyphicon glyphicon-remove"></span> Commandes fermées, <br/> prochaine commande à partir du ::hDate(i.open)::
+						::end::
+					</td>
+					<td>
+						<span class="glyphicon glyphicon-map-marker"></span>
+						Livraison :<br/> ::hDate(i.deliv)::
+					</td>
+				</tr>
+				::end::
+		</table>-->
+		
+		
+		<div class="body">
+				
+			<script language="javascript">
+				var cart;
+				$(function(){
+					cart = _.getCart();
+					cart.init("::place.id::","::date.toString().substr(0,10)::");
+				});
+			</script>
+			
+			
+			<div class="row">
+				
+				::foreach p products::
+				<div class="col-xs-12 col-sm-6 col-lg-4 product product::p.id::" style="display:none;">
+
+					<table class="product">
+						<tr>
+							<td style="vertical-align:top;">
+								<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.name)::')" data-toggle="tooltip" data-placement="top" title="En savoir plus">
+									<img src="::p.image::" style="width:64px;height:64px;" />
+
+								</a>
+							</td>
+							<td>
+								<h4>
+									<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.name)::')">::p.name::</a>
+								</h4>
+								<span class="price">::formatNum(p.price):: €</span>
+													
+								<div>
+									<form class="form-inline">
+									::if p.stock!=null && p.stock==0::
+										<span style="color:#AAA;">Stock épuisé</span>
+									::elseif !p.orderable::
+										<span style="color:#AAA;">Commande fermée</span>
+									::else::
+										::if p.stock!=null && p.stock>0 && p.stock<=10::
+										<div class="warning" >Plus que ::p.stock:: en stock</div>
+										::end::
+									
+										<input id="productQt::p.id::" type="text" value="1" style="height: 22px;width:40px;" class="form-control input-sm" maxlength="4"  data-toggle="tooltip" data-placement="top" title="Quantité"/>
+										<a class="btn btn-default btn-xs" onclick="cart.add(::p.id::)">Commander</a>
+										
+									::end::
+									
+									</form>
+								</div>
+							</td>
+						</tr>
+					</table>
+					
+				</div>
+				::end::	
+			</div>
+			
+		</div>
+	</div>
+			
 </div>
+	
+
+<div class="col-md-3" id="cartContainer">
+
+
+	<div class="cartDiv">
+		
+		<h2>
+			<span class="glyphicon glyphicon-shopping-cart"></span>
+			Commande
+			<img id="loader" src="/img/loader.gif"/>
+		</h2>
+		<div id="cart"></div>
+		
+		<a onClick="formSubmitted=true;cart.submit();" class="btn btn-default">Valider</a>
+		
+		<a class="infos" href='/contract'>Vous pouvez consulter vos commandes en cours sur votre page "mon compte"</a>
+		
+	</div>
+	
+	<div class="article">
+		<span class="tag active" id="tag0" onclick="cart.filter(0);" style="cursor:pointer;"><span class="glyphicon glyphicon-ok"></span> Tout</span><br/>
+		
+		::foreach g user._amap.getCategoryGroups()::
+			<div>
+				<h4>::g.name::</h4>
+				
+				::foreach c g.getCategories()::
+					<span class="tag" id="tag::c.id::" onclick="cart.filter(::c.id::);" style="background-color: ::c.getColor()::;cursor:pointer;">::c.name::</span><br/>
+				::end::
+			</div>
+		::end::
+		
+	</div>
+
+	
 </div>
 
+	
+<script>
+	var formSubmitted = false;
+	window.addEventListener("beforeunload", function (e) {
+		if(formSubmitted) return;
+		if(cart.isEmpty()) return;
+		var confirmationMessage = 'Vous avez une commande en cours. Si vous quittez cette page sans confirmer, votre commande sera perdue.';
+
+		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+		return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+	});
+</script>
 
 ::end::

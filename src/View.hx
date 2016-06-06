@@ -1,25 +1,22 @@
 using Std;
 import Common;
-#if neko
-import neko.Web;
-#else
-import php.Web;
-#end
-
+import tools.ArrayTool;
 
 class View extends sugoi.BaseView {
 	public function new() {
 		super();
 		this.Std = Std;
 		this.Date = Date;
-		this.Web = Web;
+		this.Web = sugoi.Web;
+		this.Lambda = Lambda;
 		this.VERSION = App.VERSION.toString();
-
+		this.ArrayTool = ArrayTool;
 	}
 	
 	public function count(i) {
 		return Lambda.count(i);
 	}
+	
 	
 	/**
 	 * newline to <br/>
@@ -30,8 +27,21 @@ class View extends sugoi.BaseView {
 		return txt.split("\n").join("<br/>");		
 	}
 	
+	/**
+	 * init view in main loop, just before rendering
+	 */
 	override function init() {
 		super.init();		
+		
+		//tuto widget display
+		var u = App.current.user;
+		if (u!=null && u.tutoState!=null) {
+			//trace("view init "+u.tutoState.name+" , "+u.tutoState.step);
+			this.displayTuto(u.tutoState.name, u.tutoState.step);	
+		}
+		
+		
+		
 	}
 	
 	
@@ -133,13 +143,40 @@ class View extends sugoi.BaseView {
 		return Std.string(e).substr(2).toLowerCase()+".png";
 	}
 	
+	
+	public function displayTuto(tuto:String, step:Int) {
+		if (tuto == null) return;
+		var t = plugin.Tutorial.all().get(tuto);
+		
+		//check if we are on the correct page (last step page)
+		//otherwise the popovers could be displayed on wrong elements
+		var previous = t.steps[step - 1];
+		if (previous != null) {
+			switch(previous.action) {
+				case TAPage(uri):
+					var here = sugoi.Web.getURI();
+					if (!plugin.Tutorial.match(uri,here)) {
+						//trace(here+" is not " + uri);
+						return;
+					}
+				default:
+			}
+			
+		}
+	
+		this.tuto = { name:tuto, step:step };
+		
+	}
+	
 	/**
 	 * renvoie 0 si c'est user.firstName qui est connecté,
 	 * renvoie 1 si c'est user.firstName2 qui est connecté
 	 * @return
 	 */
 	public function whichUser():Int {
+		if (App.current.session.data == null) return 0;
 		return App.current.session.data.whichUser == null?0:App.current.session.data.whichUser;
+		
 	}
 		
 	/**

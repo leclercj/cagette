@@ -1,4 +1,5 @@
 package controller;
+import sugoi.form.elements.IntSelect;
 using Std;
 /**
  * Gestion des cotisations des adhérents
@@ -22,13 +23,12 @@ class Membership extends controller.Controller
 			
 			var y = now.getFullYear() - x;
 			var yy = DateTools.delta(now, DateTools.days(365) * -x);
-			//trace("année "+y +" "+yy+" , periode name : "+app.user.amap.getPeriodName(yy)+"<br>");
-			data.push({key:app.user.amap.getMembershipYear(yy).string(),value:app.user.amap.getPeriodName(yy)});
+			data.push({label:app.user.amap.getPeriodName(yy),value:app.user.amap.getMembershipYear(yy)});
 		}
-		f.addElement(new sugoi.form.elements.Selectbox("year", "Periode", data,app.user.amap.getMembershipYear().string(),true));
+		f.addElement(new IntSelect("year", "Periode", data,app.user.amap.getMembershipYear(),true));
 		f.addElement(new sugoi.form.elements.DateDropdowns("date", "Date de cotisation", null, true));
 		if (f.isValid()) {
-			var y = f.getValueOf("year").parseInt();
+			var y : Int = f.getValueOf("year");
 			
 			if (db.Membership.get(member, app.user.amap, y) != null) throw Error("/membership/"+member.id, "Cette cotisation a déjà été saisie");
 			

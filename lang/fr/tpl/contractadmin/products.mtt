@@ -55,18 +55,14 @@
 				::if p.stock==null::
 					-
 				::else::
-					::if p.stock <= 10::
+					::if p.stock < 11::
 						<span style="color:red;font-weight:bold;">							
 							::p.stock::
 						</span>
 					::else::
 						::p.stock::
 					::end::
-				
-					
 				::end::
-				
-			
 			::end::
 			</td>
 			<td>

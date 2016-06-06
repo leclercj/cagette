@@ -23,52 +23,97 @@
 				<td></td>
 				<th>Produit</th>
 				<th>Prix</th>
-				<th>Quantité</th>
-			</tr>
-			::set total = 0::
-			::foreach uo userOrders::
-			<tr>
-				<td>
-					
-					<img src="::uo.product.getImage()::" style="width:32px;height:32px;" />
-				</td>
-				<td>
-					<a href="#" onclick="_.overlay('/shop/productInfo/::uo.product.id::')">::uo.product.name::	</a>
-				</td>
-				<td>
-					::set price = uo.product.price + uo.product._contract.computeFees(uo.product.price)::
-					::formatNum(price)::&nbsp;&euro;
-				</td>
-				<td>
-					::if uo.order==null::
-						::set q = 0::
+				::foreach d userOrders::
+					::if d.distrib==null::
+						<th>Qté</th>
 					::else::
-						::set q = uo.order.quantity::
+						<th>Livraison du <br/>::hDate(d.distrib.date)::</th>
+					::end::
+				::end::
+			</tr>
+				
+			
+			
+			::if userOrders.length>0::	
+			
+				::foreach uo userOrders[0].datas::
+				<tr>
+					<td>
+						<img src="::uo.product.getImage()::" style="width:32px;height:32px;" />
+					</td>
+					<td>
+						<a href="#" onclick="_.overlay('/shop/productInfo/::uo.product.id::')">::uo.product.name::	</a>
+					</td>
+					<td>
+						::set price = uo.product.price + uo.product._contract.computeFees(uo.product.price)::
+						::formatNum(price)::&nbsp;&euro;
+					</td>
+					
+					
+					::set i = repeat.uo.index::
+					
+					::foreach d userOrders::
+					<td>
+		
+						::set o = d.datas[i]::
+						
+						::if o.order==null::
+							::set q = ""::
+						::else::
+							::set q = o.order.quantity::
+						::end::
+						
+						
+						::if d.distrib==null::
+							<!-- contrat amap-->
+							<input type="text" class="form-control" name="::"d-p"+o.product.id::" id="product::o.product.id::" value="::q::" />
+						::else::
+							<input type="text" class="form-control" name="::"d"+d.distrib.id+"-p"+o.product.id::" id="product::o.product.id::" value="::q::" />
+						::end::
+						
+						
+					</td>
 					::end::
 					
-					::set total = total+(q*price)::
-					<input type="text" class="" name="product::uo.product.id::" id="product::uo.product.id::" value="::q::" />
-				</td>
-			</tr>
-				
+				</tr>
+				::end::
+			
+			::else::
+				<tr>
+					<td colspan="4">Aucune commande ouverte pour l'instant</td>
+				</tr>
 			::end::
 			
-			
-				
 			<tr>
-				<th></th>
-				<th>Total</th>
-				<th>::formatNum(total)::&nbsp;€</th>
-				<th></th>
+				
+				<th colspan="3" class="text-right">Total</th>
+				
+				::foreach d userOrders::
+					<th>
+						
+					::set total=0::
+					::foreach o d.datas::
+					
+						::if o.order!=null::
+							::set q = o.order.quantity::
+							::set price = o.product.price + o.product._contract.computeFees(o.product.price)::
+							
+							::set total = total+(q*price)::
+						
+						::end::
+					
+					::end::
+					
+					::formatNum(total)::&nbsp;€
+					</th>
+					
+					
+				::end::
 			</tr>
 		</table>
 		
-		
-		
-		
-		
-		<input type="submit" class="btn btn-primary" value="Valider la commande" name="submit" id="submit" />
-		
+		<input type="submit" class="btn btn-primary" value="Valider la commande" name="submit" id="submit" />		
+			
 		</form>
 	
 	</div>
@@ -84,26 +129,7 @@
 	</div>
 </div>
 
-<!-- total x nbre de distributions-->
-::if distributions!=null::
-	<div class="col-md-4">
-		<div class="article">
-			<p>
-				<b>::distributions.length:: distributions</b>
-				<br/>
-				pour un prix total de ::distributions.length*(total)::€	(::distributions.length:: x ::(total)::€)
-			</p>
-			<p>
-				<ul>
-				::foreach d distributions::
-					<li>::hDate(d.date)::</li>
-				::end::
-				</ul>
-			</p>
-			
-		</div>
-	</div>
-::end::
+
 
 
 ::end::

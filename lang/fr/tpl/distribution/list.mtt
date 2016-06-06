@@ -11,18 +11,22 @@
 	}
 	
 	table{
-		/*border:solid 1px black;*/
+		border-collapse: collapse;
 	}
 	
 	table tr td{
 		margin:0;
 		padding:4px;
-		border-bottom:solid 1px #DDD;
-		border-left:solid 1px #DDD;
+		
+		text-align:left;
+	}
+	table tr.order td{
+		border:solid 1px #DDD;
 	}
 	
 	table tr th{
 		background-color:#DDD;
+		text-align:left;
 	}
 	
 	h1, h2{
@@ -61,53 +65,100 @@
 	</p>
 	
 		<table class="table table-bordered table-hover"  style="width:100%;">
-				::set name = ""::
-				<tr>
-					<th>Nom</th>
-					<th>Coordonnées</th>
-					<th>Produit</th>
-					<th>Signature</th>
-					
-				</tr>
-				::foreach m contracts::	
-				<tr>
+				::set total = 0:: <!-- big total -->
+				::set subtotal = 0:: <!-- total per user -->
 				
-					<td>
-						::if m.firstName+" "+m.uname != name::
+				::foreach m orders::	
+				
+					::set i = repeat.m.index::
+				
+					<!-- name change -->
+					::if orders[i-1]==null || m.userName != orders[i-1].userName::
 						
-							
-							<b>
-								::m.uname:: ::m.firstName:: 
+						<tr>
+							<td colspan="8" style="font-size:1.3em;">
+								::m.userName:: 
 								
-								::if m.firstName2!=null::
-								& ::m.lastName2:: ::m.firstName2:: 
+								::if m.phone!=null::
+								- Téléphone : ::m.phone::
 								::end::
-							</b>
+							</td>
+						</tr>
+						<tr>
+							<td>Qté</td>
+							<td>Réf.</td>
+							<td>Produit</td>
+							<td>P.U</td>
+							<td>Sous-total</td>
+							<td>Frais</td>
+							<td>Total</td>
+							<td>Signature</td>
+						</tr>
+				
+					::end::
+				
+					<!-- 1 order line -->
+					<tr class="order">
+						<td>
+							::m.quantity:
+						</td>
+						<td>
+							$$nullSafe(::m.productRef::)
+						</td>
+						<td>
+							::m.productName::
+						</td>
+						<td>
+							::formatNum(m.productPrice)::&nbsp;&euro;
+						</td>
+						<td>
+							::formatNum(m.subTotal)::&nbsp;&euro;
+						</td>
+						<td>
+							<!-- frais -->
+							::if m.percentageValue!=null::
+								::formatNum(m.fees)::&nbsp;&euro;
+							::end::
+						</td>
+						<td>
+							<!-- total -->
+							::formatNum(m.total)::&nbsp;&euro;
+							::set total = total + m.total::
+							::set subtotal = subtotal + m.total::
+						</td>
+						<td style="width:20%;">
 							
-							
-							
-							
-						::end::
+						</td>
 						
-					</td>
-					<td>
-						::if m.firstName+" "+m.uname != name::
-							$$nullSafe(::m.phone::)
-						::end::
-						
-					</td>
-					::set name =  m.firstName+" "+m.uname ::
-					<td>
-						::m.quantity:: x ::m.pname::
-					</td>
-					<td style="width:20%;">
-						
-						
-					</td>
+					</tr>
+				
+
+				
+					<!-- member total -->
+					::if (orders[i+1]==null || m.userName != orders[i+1].userName) ::
 					
-				</tr>
+						::if subtotal!=0:: 
+						<tr style="border-top:2px solid #DDD;">	
+							<td colspan="5"></td>
+							<th class="text-right">TOTAL</th>
+							<th>::formatNum(subtotal)::&nbsp;&euro;</th>					
+							<td></td>
+							::set subtotal = 0::
+						</tr>
+						::end::
+					::end::
+			
 				::end::
 
+				
+				<!-- big total -->
+				<tr style="font-size:1.3em;">					
+					<td class="text-right">Total Commande : </td>
+					<td>::formatNum(total)::&nbsp;&euro;</td>					
+					<td colspan="6"></td>
+				</tr>
+				
+				
 				</table>
 				
 				<p>::raw nl2br(user.getAmap().txtDistrib)::</p>

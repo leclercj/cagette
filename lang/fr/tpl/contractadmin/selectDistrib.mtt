@@ -4,13 +4,28 @@
 			
 			<h3>Commandes</h3>
 		
-			<table class="table table-bordered">
-				
-			::foreach d distributions::
+			<table class="table table-bordered table-hover table-striped">
 				<tr>
+					<th>Date</th>
+					<th>Lieu</th>
+					<th></th>
+				</tr>
+			::foreach d distributions::
+			
+				::if d.date!=null && d.date.getTime() < Date.now().getTime()::
+					::set style = "opacity:0.5;"::
+				::else::
+					::set style = ""::
+				::end::
+				<tr  style="::style::" >
+			
 					<td>::hDate(d.date)::</td>
+					<td>::d._place.name::</td>
 					<td>
-						<a href="/contractAdmin/orders/::c.id::?d=::d.id::" class="btn btn-default">Commandes</a>
+						<a href="/contractAdmin/orders/::c.id::?d=::d.id::" class="btn btn-default">
+							<span class="glyphicon glyphicon-list"></span>
+							Commandes
+						</a>
 						
 					</td>
 				</tr>
@@ -19,12 +34,20 @@
 			
 		::else::
 			<div class="alert alert-danger">
-				Ce contrat est un <b>contrat à commandes variables</b>, vous devez donc d'abord créer une ou des livraison pour pouvoir y relier
-				des commandes.<br/>
 				
-				<a href="/contractAdmin/distributions/::c.id::" class="btn btn-default">Gérer les distributions</a>
+				<b>Aucune distribution prochainement.</b><br/>
+				<a href="/contractAdmin/distributions/::c.id::">Cliquez ici pour gérer les distributions</a>
 			</div>
 		::end::
 	
+		
+	<div>
+		
+		<a href="?old=1" class="btn btn-default btn-sm">
+			Commandes anciennes
+		</a>
+		
+		
+	</div>
 
 ::end::

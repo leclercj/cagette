@@ -6,7 +6,7 @@
 		<title>::NAME::</title>
 		<!-- Cagette CSS -->
 		<link rel="stylesheet" type="text/css" href="/css/::getVariable('css')::/style.css"/>
-		<link href='http://fonts.googleapis.com/css?family=Cantora+One&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
+		<link href='//fonts.googleapis.com/css?family=Cantora+One&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
 		
 		<!-- JQUERY -->
 		<script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -36,26 +36,40 @@
 		
 		
 			
-			<div class="row" style="margin-top:10px;">
-				<div class="col-md-7">
-					<h1>
-					::if user!=null && user.getAmap()!=null::
-						::user.getAmap().name::
-					::else::
-						Cagette.net
-					::end::
-					</h1>
-				</div>
-				::if user != null::
-				<div class="col-md-5" style="margin-top:12px;text-align:right;">
+		<div class="row" style="margin-top:10px;">
+			<div class="col-md-7">
+				
+				::if user!=null && user.getAmap()!=null::
+					<h1>::user.getAmap().name::</h1>
+				::else::
+					<h1 style="margin-bottom:22px;"><a href="/">Cagette.net</a></h1>
+					
+				::end::
+				
+			</div>
+			
+			::if user != null::
+			<div class="col-md-5">					
+				<div class="dropdown pull-right" style="margin-top:16px;">
 					::user.getName()::
 					::if user.firstName2!=null::
 						et ::user.lastName2:: ::user.firstName2::  						
 					::end::
-					<a href="/user/logout" class="btn btn-default btn-xs">Déconnexion</a>
+					<button  class="btn btn-default btn-xs dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown">
+					
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+
+						<li><a href="/user/choose?show=1">Connexion à un autre groupe</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="/user/logout"><span class="glyphicon glyphicon-log-out"></span> Déconnexion</a></li>
+					</ul>
 				</div>
-				::end::
 			</div>
+			::end::
+				
+		</div>
 		
 		
 			::if user != null::
@@ -71,26 +85,47 @@
 					</div>	
 				
 					<div class="collapse navbar-collapse" id="cagette-navbar">
-						<ul class="nav navbar-nav">
-							<li ::attr class if(category=="home" ) 'active' ::><a href="/">Accueil</a></li>
-							<li ::attr class if(category=="contract" ) 'active' ::><a href="/contract">Mon compte</a></li>
-							<li ::attr class if(category=="amap" ) 'active' ::><a href="/amap">Mon ::wAmap()::</a></li>
-							<li ::attr class if(category=="members" ) 'active' ::><a href="/member" ::cond user.canAccessMembership()::>Gestion adhérents</a></li>
-							<li ::attr class if(category=="contractadmin" ) 'active' ::><a href="/contractAdmin" ::cond user.isContractManager(null)::>Gestion contrats</a></li>
-							<li ::attr class if(category=="messages" ) 'active' ::><a href="/messages" ::cond user.canAccessMessages()::>Messagerie</a></li>
-							<li ::attr class if(category=="amapadmin" ) 'active' ::><a href="/amapadmin" ::cond user.isAmapManager()::>Gestion ::wAmap()::</a></li>
-							<li ><a href="/admin" ::cond user.isAdmin()::>Admin</a></li>
+						
+						<ul class="nav navbar-nav navbar-left">
+							<li ::attr class if(category=="home") 		'active' ::>		<a href="/">Accueil</a></li>
+							<li ::attr class if(category=="contract" ) 	'active' ::>		<a href="/contract">Mon compte</a></li>
+							<li ::attr class if(category=="amap") 		'active' ::>		<a href="/amap">Mon ::wAmap()::</a></li>
+							
 						</ul>
 						
 						<ul class="nav navbar-nav navbar-right">
-							<li><a href="http://www.cagette.net/aviva" target="_blank">Votez pour Cagette.net !</a></li>
+							<li id="member" ::attr class if(category=="members") 	'active' ::>		<a href="/member" ::cond user.canAccessMembership()::>Gestion adhérents</a></li>
+							<li id="contractadmin" ::attr class if(category=="contractadmin") 'active' ::>		<a href="/contractAdmin" ::cond user.isContractManager(null)::>Gestion contrats</a></li>
+							<li id="messages" ::attr class if(category=="messages") 	'active' ::>		<a href="/messages" ::cond user.canAccessMessages()::>Messagerie</a></li>
+							<li id="amapadmin" ::attr class if(category=="amapadmin") 	'active' ::>		<a href="/amapadmin" ::cond user.isAmapManager()::>Gestion ::wAmap()::</a></li>
+							<li ::cond user.isAdmin()::>									<a href="/admin" >Admin</a></li>
 						</ul>
-
+						
 					</div>
 				
 			</nav>
 			
 		::end::
+		
+		<!-- Modal window -->
+		<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h2 class="modal-title" id="myModalLabel"></h2>
+			  </div>
+			  <div class="modal-body">
+				...
+			  </div>
+			  <div class="modal-footer" style="clear:both;">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+				
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
 		
 		<div class="row">
 			<div id="content" class="col-md-12">
@@ -115,14 +150,14 @@
 		<div class="row">
 			<div class="col-md-12" >
 				<div id="footer">
-					<a href="http://www.cagette.net" target="_blank">Cagette.net</a> • 
-					<a href="http://aide.cagette.net" target="_blank">Documentation</a> •
+					<a href="http://www.cagette.net" 	target="_blank">Cagette.net</a> • 
+					<a href="http://aide.cagette.net" 	target="_blank">Documentation</a> •
 					<a href="https://groups.google.com/forum/?hl=fr#!forum/cagette" target="_blank">Forum</a> •
 					<a href="https://cagette.uservoice.com" target="_blank">Suggérer une amélioration</a> •
 					<a href="http://www.cagette.net/legal"> Mentions légales</a> •
 					<a href="https://www.facebook.com/cagette" target="_blank"> Facebook</a> •
 					<a href="https://twitter.com/Cagettenet" target="_blank"> Twitter</a> •
-					v.::VERSION::
+					<span style="color:#666;">version ::VERSION::</span>
 				</div>
 			</div>
 		</div>
@@ -204,9 +239,18 @@
 			})();
 		  
 		  
-			//Tooltips
+			//Tooltips & popovers
 			$(function () {
-			  $('[data-toggle="tooltip"]').tooltip()
+				$('[data-toggle="tooltip"]').tooltip();
+				$('[data-toggle="popover"]').popover();
+			  
+				//tutorials
+				::if tuto!=null::
+				
+				_.getTuto("::tuto.name::",::tuto.step::);
+			
+				::end::
+			  
 			})
 		</script>
 		

@@ -49,6 +49,8 @@
 					<th></th>
 				</tr>
 			</table>
-			
+
+
+			$$export(/contractAdmin/stats/::c.id::?csv=1&stat=1)
 		::end::	
 ::end::

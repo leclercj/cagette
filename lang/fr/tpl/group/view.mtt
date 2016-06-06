@@ -1,0 +1,160 @@
+::use 'design.mtt'::
+
+	
+	<div class="col-md-8 col-md-offset-2">
+		
+		<div class="article">
+			
+			<div class="row">
+				<div class="col-md-4">
+					<p>
+						
+					::if group._image!=null::
+					<img src="::file(group._image)::" class="img-responsive img-thumbnail" /><br/>
+					::end::
+					</p>
+					
+					<p>
+						
+					::if isMember::
+						<!-- connected and member of the group-->
+						<a href="/user/choose?amap=::group.id::" class="btn btn-primary">
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							 Accéder à mon compte
+						</a>
+					
+					::else::
+					
+						<h4>Inscriptions :</h4>
+						::switch group.regOption::
+						
+						::case::
+						
+							<p>
+								Contactez le responsable pour vous inscrire à ce groupe et connaître les modalités d'adhésion.
+							</p>
+							<p>
+								<a href="mailto: ::group._contact.email::?subject=Adhésion"  class="btn btn-primary">
+									<span class="glyphicon glyphicon-envelope"></span>
+									Demande d'adhésion
+								</a>
+							</p>
+						::case::
+							
+							<p>
+								Ce groupe accepte les inscriptions sur liste d'attente. 
+								Un coordinateur vous contactera pour vous informer.
+							</p>
+							<p>
+							<a href="/group/list/::group.id::"  class="btn btn-primary">
+								<span class="glyphicon glyphicon-chevron-right"></span>
+								Inscription liste d'attente
+							</a>
+							</p>
+							
+						::case::
+							<p>
+								<a href="/group/register/::group.id::"  class="btn btn-primary">
+									<span class="glyphicon glyphicon-chevron-right"></span>
+									Inscription libre
+								</a>
+							</p>
+							
+						::case::
+							<p>
+								Ce groupe est complet et n'accepte plus de nouvelles inscriptions.
+							</p>
+						::end::
+					
+					
+					::end::
+						
+					
+					</p>
+					
+					::if user==null::
+						<hr />
+						<h4>Déjà membre ? Connectez-vous :</h4>
+						<div class="text-center">
+							<form action="/user/login" method="post">
+								<input type="text" name="name" placeHolder="email" value="" class="form-control" />
+								<input type="password" name="pass" placeHolder="mot de passe" value="" class="form-control" style="margin-top:12px;" />						
+								<button type="submit" class="btn btn-default btn-sm" style="margin-top:12px;"><span class="glyphicon glyphicon-chevron-right"></span> Connexion</button>
+							</form>
+						</div>
+					::end::
+					
+					
+					
+				</div>
+				<div class="col-md-8">
+					
+					<h2>
+						::group.name::
+					</h2>
+					
+					<p>
+						::if group.txtIntro!=null && group.txtIntro!=""::
+							::raw nl2br(group.txtIntro)::
+						::end::
+					</p>
+					
+					::set place = group.getMainPlace()::
+					<p ::cond place!=null::>
+						<span class="glyphicon glyphicon-map-marker"></span> Livraisons :
+						
+						<b>::place.name::</b><br/>
+						$$nullSafe(::place.address1::) $$nullSafe(::place.address2::)
+						$$nullSafe(::place.zipCode::) $$nullSafe(::place.city::)
+					</p>
+					
+					<hr/>
+					
+					<p>
+						<h3>Contact</h3>
+						$$contact(::group._contact::)	
+					</p>
+					
+					<hr/>
+					
+					<p>
+						<h3>Producteurs et produits</h3>
+						<p>
+							Extrait non exhaustif des produits proposés :
+						</p>
+				
+						::foreach c contracts::
+						<p>
+							<b>::c.name::</b><br/>
+							::c._vendor.name::, $$nullSafe(::c._vendor.zipCode::) $$nullSafe(::c._vendor.city::)
+							<div class="row">
+								::foreach p c.getProductsPreview(6)::
+								<div class="col-md-2" data-toggle="tooltip" data-placement="top" title="::p.name::" >
+									<img class="img-responsive" src="::p.getImage()::"  /> 
+								</div>
+								::end::	
+							</div>
+						</p>	
+						::end::
+				
+					</p>
+					
+				</div>
+			</div>
+			
+			
+			
+			
+			
+			<div class="col-md-4">
+				
+			</div>
+			
+			
+		</div>
+
+	</div>
+	
+	
+
+::end::

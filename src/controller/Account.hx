@@ -31,8 +31,8 @@ class Account extends Controller
 		
 		if (form.isValid()) {
 			
-			if (Std.string(app.user.id) != form.getValueOf("id")) {
-				throw "no access";
+			if (app.user.id != form.getValueOf("id")) {
+				throw "access forbidden";
 			}
 			var admin = app.user.isAdmin();
 			

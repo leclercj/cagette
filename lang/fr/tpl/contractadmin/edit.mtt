@@ -20,7 +20,7 @@
 			Adhérent : 
 			<select name="user" class="form-control">
 				::foreach uu users::
-				<option value="::uu.key::">::uu.value::</option>
+				<option value="::uu.value::">::uu.label::</option>
 				::end::			
 			</select>
 			
@@ -30,7 +30,7 @@
 			<select name="user2" class="form-control">
 				<option value="0">Personne</option>
 				::foreach uu users::
-				<option value="::uu.key::">::uu.value::</option>
+				<option value="::uu.value::">::uu.label::</option>
 				::end::			
 			</select>
 			::end::

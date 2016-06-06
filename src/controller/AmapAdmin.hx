@@ -1,7 +1,11 @@
 package controller;
 import db.UserAmap;
+import haxe.Http;
+import sugoi.Web;
 import sugoi.form.Form;
 import Common;
+import sugoi.form.elements.IntSelect;
+import sugoi.form.elements.StringInput;
 
 
 class AmapAdmin extends Controller
@@ -14,10 +18,9 @@ class AmapAdmin extends Controller
 		
 		//lance un event pour demander aux plugins si ils veulent ajouter un item dans la nav
 		var nav = new Array<Link>();
-		var e = new event.NavEvent();
-		e.id = "amapAdmin";
-		App.current.eventDispatcher.dispatch(e);
-		view.nav = e.nav;
+		var e = Nav(nav,"groupAdmin");
+		app.event(e);
+		view.nav = e.getParameters()[0];
 	}
 	
 	
@@ -25,6 +28,23 @@ class AmapAdmin extends Controller
 	function doDefault() {
 		view.membersNum = UserAmap.manager.count($amap == app.user.amap);
 		view.contractsNum = app.user.amap.getActiveContracts().length;
+		
+		
+		
+		//ping cagette groups directory
+		if (Std.random(10) == 0 && app.user.amap.flags.has(db.Amap.AmapFlags.CagetteNetwork)){
+			
+			var req = new Http("http://annuaire.cagette.net/api/ping?url="+StringTools.urlEncode( "http://" + App.config.HOST  ) );
+			
+			
+			try{
+				req.request();
+			}catch (e:Dynamic){
+				App.current.logError("Error while contacting annuaire.cagette.net : "+e);
+			}
+			
+		}
+		
 	}
 	
 	@tpl("amapadmin/addimage.mtt")
@@ -111,35 +131,6 @@ class AmapAdmin extends Controller
 
 	}
 	
-	/*@admin
-	public function doMigrateRights() {
-		var users = new Map<Int,db.User>();
-		var amaps = db.Amap.manager.all();
-		for ( amap in amaps) {
-			for ( c in amap.getActiveContracts()) {
-				if (c.contact != null) {
-					var ua = db.UserAmap.get(c.contact, amap, true);
-					ua.giveRight(ContractAdmin(c.id));
-					ua.giveRight(Messages);
-					ua.giveRight(Membership);
-					ua.update();
-				}
-			}
-			
-		}
-		
-		for ( a in amaps) {
-			var ua = db.UserAmap.get(a.contact, a, true);
-			ua.rights = [AmapAdmin, Messages, ContractAdmin(), Membership];
-			ua.update();
-		}
-		
-		//for ( u in users) {
-			//var ua = db.UserAmap.get(a.contact, a, true);
-		//}
-		
-		
-	}*/
 	
 	@tpl("form.mtt")
 	public function doEditRight(?u:db.User) {
@@ -147,13 +138,13 @@ class AmapAdmin extends Controller
 		var form = new sugoi.form.Form("editRight");
 		
 		if (u == null) {
-			form.addElement( new sugoi.form.elements.Selectbox("user", "Adhérent", app.user.amap.getMembersFormElementData(), null, true) );	
+			form.addElement( new IntSelect("user", "Adhérent", app.user.amap.getMembersFormElementData(), null, true) );	
 		}
 		
 		var data = [];
 		for (r in db.UserAmap.Right.getConstructors()) {
 			if (r == "ContractAdmin") continue; //managed later
-			data.push({key:r,value:r});
+			data.push({label:r,value:r});
 		}
 		
 		var ua : db.UserAmap = null;
@@ -168,12 +159,13 @@ class AmapAdmin extends Controller
 		
 		form.addElement( new sugoi.form.elements.CheckboxGroup("rights", "Droits", data, populate, true, true) );
 		form.addElement( new sugoi.form.elements.Html("<hr/>"));
-		//droits sur des contrats
+		
+		//Rights on contracts
 		var data = [];
 		var populate :Array<String> = [];
-		data.push({key:"contractAll",value:"Tous les contrats"});
+		data.push({value:"contractAll",label:"Tous les contrats"});
 		for (r in app.user.amap.getActiveContracts(true)) {
-			data.push({key:"contract"+Std.string(r.id),value:r.name});
+			data.push( { label:r.name , value:"contract"+Std.string(r.id) } );
 		}
 		
 		if(ua!=null && ua.rights!=null){
@@ -191,21 +183,18 @@ class AmapAdmin extends Controller
 			}
 		}
 		
-		//var r = new haxe.Http("http://www.sfs.chapatiz.com/index/imagepost");
-		//r.setPostData("img=" + imgData);
-		//r.onData = function(s) trace(s);
-		//r.onError = function(s) throw s;
-		//r.onStatus = function(s:Int) trace("status " + s);
 
 		form.addElement( new sugoi.form.elements.CheckboxGroup("rights", "Gestion contrats", data, populate, true, true) );
 		
-		if(form.checkToken()) {
+		if (form.checkToken()) {
+			
+			var wasManager = app.user.isAmapManager();
 			
 			if (u == null) {				
 				ua = db.UserAmap.manager.select($userId == Std.parseInt(form.getValueOf("user")) && $amapId == app.user.amap.id, true);
 			}
 			ua.rights = [];
-			//Sys.print(Type.getClass(form.getElement("rights").value));
+
 			var arr : Array<String> = cast form.getElement("rights").value;
 			for ( r in arr) {
 				if (r.substr(0, 8) == "contract") {
@@ -218,8 +207,23 @@ class AmapAdmin extends Controller
 				}else {
 					ua.rights.push( db.UserAmap.Right.createByName(r) );	
 				}
-				
 			}
+			
+			//avoid "cut my own hands" problem
+			if (ua.user.id == app.user.id && wasManager ) {
+				var isManager = false;
+				for ( r in ua.rights) {
+					if (r.equals(db.UserAmap.Right.AmapAdmin)) {
+						isManager = true; 
+						break;
+					}
+				}
+				if (isManager == false) {
+					throw Error("/amapadmin/rights", "Par sécurité, vous ne pouvez pas vous enlevez vous même les droits de gestion du groupe.");
+				}
+			}
+			
+			
 			if (ua.rights.length == 0) ua.rights = null;
 			ua.update();
 			if (ua.rights == null) {
@@ -255,16 +259,16 @@ class AmapAdmin extends Controller
 		
 		var i = 1;
 		for (k in a.vatRates.keys()) {
-			f.addElement(new sugoi.form.elements.Input(i+"-k", "Nom "+i, k));
-			f.addElement(new sugoi.form.elements.Input(i + "-v", "Taux "+i, Std.string(a.vatRates.get(k)) ));
+			f.addElement(new StringInput(i+"-k", "Nom "+i, k));
+			f.addElement(new StringInput(i + "-v", "Taux "+i, Std.string(a.vatRates.get(k)) ));
 			//f.addElement(new sugoi.form.elements.Html("<hr/>"));
 			i++;
 		}
 		var j = i;
 		
 		for (x in 0...5 - i) {
-			f.addElement(new sugoi.form.elements.Input(i+"-k", "Nom "+i, ""));
-			f.addElement(new sugoi.form.elements.Input(i + "-v", "Taux "+i, ""));
+			f.addElement(new StringInput(i+"-k", "Nom "+i, ""));
+			f.addElement(new StringInput(i + "-v", "Taux "+i, ""));
 			//f.addElement(new sugoi.form.elements.Html("<hr/>"));
 			i++;
 		}

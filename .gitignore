@@ -5,3 +5,5 @@ config.xml
 www/plugin/*
 lang/fr/tpl/plugin/*
 www/file/*
+tmp/*
+*node_modules*

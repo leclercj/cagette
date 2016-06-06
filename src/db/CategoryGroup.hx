@@ -7,7 +7,8 @@ class CategoryGroup extends sys.db.Object
 	
 	public var id : SId;
 	public var name : SString<32>;
-	public var color : STinyInt; //id de couleur
+	public var color : STinyInt; //color id
+	public var pinned : SBool; //if true, the products tagged with these categories will be pinned on top of the shop.
 	
 	
 	@:relation(amapId) public  var amap:db.Amap;

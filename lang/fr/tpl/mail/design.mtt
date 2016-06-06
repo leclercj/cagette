@@ -1,18 +1,29 @@
 ﻿
 <div>
-::raw __content__::
+	::raw __content__::
 </div>
+
 <hr/>
+
 <div style="color:#666;font-size:12px;">
-Cet e-mail a été envoyé depuis <a href="http://www.cagette.net">Cagette.net</a>.
+	Cet e-mail a été envoyé depuis <a href="http://www.cagette.net">Cagette.net</a>.
 
-::if group!=null::
-	<br/>
-	Vous recevez ce message car vous faites partie de <b>::group.name::</b>
-::end::
+	::if group!=null::
+		<br/>
+		Vous recevez ce message car vous faites partie de <b>::group.name::</b>
+	::end::
 
-::if list!=null::
-	 ( ::list:: )
-::end::
+	::if list!=null::
+		( ::list:: )
+	::end::
+
+	<!-- btn -->
+	::if group!=null::
+	<div style="width:50%;max-width:300px;margin: 12px auto;padding: 8px;text-decoration: none;background: #070;border-radius: 3px;text-align: center;">
+		<a href="http://::HOST::/group/::group.id::" style="color: white;font-weight: bold;text-decoration: none;font-size:1.2em;">
+			&rarr; ::group.name::
+		</a>
+	</div>
+	::end::
 
 </div>

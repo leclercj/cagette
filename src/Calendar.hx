@@ -36,7 +36,7 @@ class Calendar
 		
 		//find last monday
 		for ( i in 0...40) {
-			if ( pointer.getDay() == 1 && pointer.getMonth() != m) {
+			if ( pointer.getDay() == 1 ) {
 				break;
 			}
 			pointer = DateTools.delta(pointer, -1000.0 * 60 * 60 * 24);
@@ -45,13 +45,13 @@ class Calendar
 		
 		//go ahead for at least 27 days
 		for ( i in 0...28) {
-			pointer = DateTools.delta(pointer, 1000.0 * 60 * 60 * 24);	
 			out.set( pointer.toString().substr(0, 10), [] );
+			pointer = DateTools.delta(pointer, 1000.0 * 60 * 60 * 24);
 		}
 		
 		//find end
 		for ( i in 0...40) {
-			if ( pointer.getDay() == 1 && pointer.getMonth() != m) break;
+			//if ( pointer.getDay() == 1 && pointer.getMonth() != m) break;
 			out.set( pointer.toString().substr(0, 10), [] );
 			pointer = DateTools.delta(pointer, 1000.0 * 60 * 60 * 24);
 		}

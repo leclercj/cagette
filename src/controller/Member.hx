@@ -21,9 +21,9 @@ class Member extends Controller
 		super();
 		if (!app.user.canAccessMembership()) throw Redirect("/");
 		
-		var e = new event.Event();
-		e.id = "displayMember";
-		App.current.eventDispatcher.dispatch(e);
+		//var e = new event.Event();
+		//e.id = "displayMember";
+		//App.current.eventDispatcher.dispatch(e);
 	}
 	
 	@logged
@@ -100,7 +100,61 @@ class Member extends Controller
 			view.newUsers = db.User.getUsers_NewUsers().length;	
 		}
 		
+		view.waitingList = db.WaitingList.manager.count($group == app.user.amap);
 		
+	}
+	
+	/**
+	 * Move to waiting list
+	 */
+	function doMovetowl(u:db.User){
+		
+		var ua = db.UserAmap.get(u, app.user.amap, true);
+		ua.delete();
+		
+		var wl = new db.WaitingList();
+		wl.user = u;
+		wl.group = app.user.amap;
+		wl.insert();
+		
+		throw Ok("/member", u.getName() + " a été replacé en liste d'attente.");
+		
+		
+	}
+	
+	@tpl('member/waiting.mtt')
+	function doWaiting(?args:{?add:db.User,?remove:db.User}){
+		
+		if (args != null){
+			
+			if (args.add != null){
+				//this user becomes member and is removed from waiting list
+				var w = db.WaitingList.manager.select($user == args.add && $group == app.user.amap , true);
+				
+				var ua = new db.UserAmap();
+				ua.amap = app.user.amap;
+				ua.user = w.user;
+				ua.insert();
+				
+				w.delete();
+				
+				throw Ok("/member/waiting", "Cette personne a bien été ajoutée aux adhérents");
+				
+			}else if (args.remove != null){
+				
+				//simply removed from waiting list
+				
+				var w = db.WaitingList.manager.select($user == args.remove && $group == app.user.amap , true);
+				w.delete();
+				
+				throw Ok("/member/waiting", "Demande supprimée");
+				
+			}
+			
+		}
+		
+		
+		view.waitingList = db.WaitingList.manager.search($group == app.user.amap,{orderBy:-date});
 	}
 	
 	/**
@@ -272,10 +326,11 @@ class Member extends Controller
 	function doDelete(user:db.User,?args:{confirm:Bool,token:String}) {
 		
 		if (checkToken()) {
-			if (!app.user.isContractManager()) throw "Vous ne pouvez pas faire ça.";
+			if (!app.user.canAccessMembership()) throw "Vous ne pouvez pas faire ça.";
 			if (user.id == app.user.id) throw Error("/member/view/"+user.id,"Vous ne pouvez pas vous effacer vous même.");
-			if ( user.getOrders(app.user.amap).length > 0 && !args.confirm) throw Error("/member/view/"+user.id,"Attention, ce compte a des commandes en cours. <a class='btn btn-default btn-xs' href='/member/delete/"+user.id+"?token="+args.token+"&confirm=1'>Effacer quand-même</a>");
-		
+			if ( user.getOrders(app.user.amap).length > 0 && !args.confirm) {
+				throw Error("/member/view/"+user.id,"Attention, ce compte a des commandes en cours. <a class='btn btn-default btn-xs' href='/member/delete/"+user.id+"?token="+args.token+"&confirm=1'>Effacer quand-même</a>");
+			}
 		
 			var ua = db.UserAmap.get(user, app.user.amap, true);
 			if (ua != null) {
@@ -292,7 +347,7 @@ class Member extends Controller
 	@tpl('form.mtt')
 	function doMerge(user:db.User) {
 		
-		if (!app.user.isContractManager()) throw "Vous ne pouvez pas faire ça.";
+		if (!app.user.canAccessMembership()) throw "Vous ne pouvez pas faire ça.";
 		
 		view.title = "Fusionner un compte avec un autre";
 		view.text = "Cette action permet de fusionner deux comptes ( quand vous avez des doublons dans la base de données par exemple).<br/>Les contrats du compte 2 seront rattachés au compte 1, puis le compte 2 sera effacé.<br/>Attention cette action n'est pas annulable.";
@@ -356,8 +411,8 @@ class Member extends Controller
 	
 	
 	@tpl('member/import.mtt')
-	function doImport(?args:{confirm:Bool}) {
-			
+	function doImport(?args: { confirm:Bool } ) {
+		
 		var step = 1;
 		var request = Utils.getMultipart(1024 * 1024 * 4); //4mb
 		
@@ -368,15 +423,12 @@ class Member extends Controller
 			var csv = new sugoi.tools.Csv();
 			var unregistred = csv.importDatas(data);
 			
-			/*var t = new sugoi.helper.Table("table");
-			trace(t.toString(unregistred));*/
-			
 			//cleaning
 			for ( user in unregistred.copy() ) {
 				
 				//check nom+prenom
-				if (user[0] == null || user[1] == null) throw "Vous devez remplir le nom et prénom de la personne. <br/>Cette ligne est incomplète : " + user;
-				if (user[2] == null) throw "Chaque personne doit avoir un email, sinon elle ne pourra pas se connecter. "+user[0]+" "+user[1]+" n'en a pas.";
+				if (user[0] == null || user[1] == null) throw Error("/member/import","Vous devez remplir le nom et prénom de la personne. Cette ligne est incomplète : " + user);
+				if (user[2] == null) throw Error("/member/import","Chaque personne doit avoir un email, sinon elle ne pourra pas se connecter. "+user[0]+" "+user[1]+" n'en a pas. "+user);
 				//uppercase du nom
 				if (user[1] != null) user[1] = user[1].toUpperCase();
 				if (user[5] != null) user[5] = user[5].toUpperCase();
@@ -413,25 +465,7 @@ class Member extends Controller
 				
 				var us = db.User.getSimilar(firstName, lastName, email, firstName2, lastName2, email2);
 				
-				
-				/*var us = db.User.manager.search(
-					(
-					
-						($firstName.like(firstName) && $lastName.like(lastName)) || 
-						($firstName2!=null && $firstName2.like(firstName) && $lastName2.like(lastName)) ||
-						
-						($firstName.like(firstName2) && $lastName.like(lastName2)) || 
-						($firstName2!=null && $firstName2.like(firstName2) && $lastName2.like(lastName2)) ||
-						
-						($email.like(r[2])) ||
-						($email2!=null && $email2.like(r[2])) ||
-						($email.like(r[6])) ||
-						($email2!=null && $email2.like(r[6]))
-					)
-					
-				,false);*/
 				if (us.length > 0) {
-					//trace(r[0]+" "+r[1]+" existe deja : "+us);
 					unregistred.remove(r);
 					registred.push(r);
 				}
@@ -528,9 +562,9 @@ class Member extends Controller
 	@tpl("user/insert.mtt")
 	public function doInsert() {
 		
-		var e = new event.Event();
-		e.id = "wantToAddMember";
-		App.current.eventDispatcher.dispatch(e);
+		//var e = new event.Event();
+		//e.id = "wantToAddMember";
+		//App.current.eventDispatcher.dispatch(e);
 		
 		var m = new db.User();
 		var form = sugoi.form.Form.fromSpod(m);
@@ -587,22 +621,14 @@ class Member extends Controller
 				
 				if (form.getValueOf("warnAmapManager") == "1") {
 					
-					try{
-					//var m = new sugoi.mail.MandrillApiMail();
-					//m.setSubject(app.user.amap.name+" - Nouvel inscrit : " + u.getCoupleName());
-					//m.setSender(app.user.email);
-					//m.setRecipient(app.user.getAmap().contact.email);
-					//var text = app.user.getName() + " vient de saisir la fiche d'une nouvelle personne  : <br/><strong>" + u.getCoupleName() + "</strong><br/> <a href='http://app.cagette.net/member/view/" + u.id + "'>voir la fiche</a> ";
-					//m.setHtmlBody('mail/message.mtt', { text:text } );
-					//m.send();
-					
-					var m = new Email();
-					m.from(new EmailAddress(App.config.get("default_email"),"Cagette.net"));					
-					m.to(new EmailAddress(app.user.getAmap().contact.email));					
-					m.setSubject( app.user.amap.name+" - Nouvel inscrit : " + u.getCoupleName() );
-					var text = app.user.getName() + " vient de saisir la fiche d'une nouvelle personne  : <br/><strong>" + u.getCoupleName() + "</strong><br/> <a href='http://app.cagette.net/member/view/" + u.id + "'>voir la fiche</a> ";
-					m.setHtml( app.processTemplate("mail/message.mtt", { text:text } ) );
-					App.getMailer().send(m);
+					try{					
+						var m = new Email();
+						m.from(new EmailAddress(App.config.get("default_email"),"Cagette.net"));					
+						m.to(new EmailAddress(app.user.getAmap().contact.email));					
+						m.setSubject( app.user.amap.name+" - Nouvel inscrit : " + u.getCoupleName() );
+						var text = app.user.getName() + " vient de saisir la fiche d'une nouvelle personne  : <br/><strong>" + u.getCoupleName() + "</strong><br/> <a href='http://app.cagette.net/member/view/" + u.id + "'>voir la fiche</a> ";
+						m.setHtml( app.processTemplate("mail/message.mtt", { text:text } ) );
+						App.getMailer().send(m);
 					
 					}catch(e:Dynamic){}
 				}

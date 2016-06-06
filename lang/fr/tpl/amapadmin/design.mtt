@@ -6,7 +6,7 @@
 			<span class="panel-title"><a href="/amapadmin">Mon ::wAmap()::</a></span>
 		</div>
 		
-		<ul class="nav nav-tabs nav-stacked" >
+		<ul id="subnav" class="nav nav-tabs nav-stacked" >
 			
 			<li><a href="/amapadmin/rights/">Droits et accès</a></li>
 			<li><a href="/amapadmin/vatRates/">Taux de TVA</a></li>

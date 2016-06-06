@@ -1,0 +1,46 @@
+::use 'design.mtt'::
+<div class="col-md-12">
+	<div class="article">
+		
+		<h2>Liste d'attente</h2>
+		
+		<table class="table table-bordered">
+			
+			<tr>
+				<th>Nom</th>
+				<th>Email</th>
+				<th>Telephone</th>
+				<th>Inscription en liste d'attente</th>
+				<th>Message</th>
+			</tr>
+			
+			::foreach w waitingList::
+			<tr>
+				::set u = w._user::
+				
+				<td>::u.getName()::</td>
+				<td>::u.email::</td>
+				<td>::u.phone::</td>
+				<td>::hDate(w.date)::</td>
+				<td>::w.message::</td>
+				<td class="col-md-4">
+					<a href="/member/waiting?add=::u.id::" class="btn btn-primary btn-sm">
+						<span class="glyphicon glyphicon-ok"></span>
+						Passer en adhérent
+					</a>
+					
+					<a href="/member/waiting?remove=::u.id::" class="btn btn-default btn-sm">
+						<span class="glyphicon glyphicon-remove"></span>
+						Supprimer</a>
+					</td>
+			</tr>
+			::end::
+			
+		</table>
+	
+	</div>
+</div>
+
+
+
+::end::

@@ -1,0 +1,126 @@
+::use 'design.mtt'::
+
+<div id="content" class="col-md-8">
+	
+	<div class="row">
+		<div id="content" class="col-md-12">			
+			<div class="alert alert-danger">				
+				<span class="glyphicon glyphicon-exclamation-sign"></span>
+				Hou là là !
+			</div>
+			
+		</div>	
+	</div>
+	
+	<div class="row">
+		<div id="content" class="col-md-12">
+			
+			<div class="alert alert-success">
+				
+				<span class="glyphicon glyphicon-ok"></span>
+				
+				
+				Todo bem
+			</div>
+			
+		</div>	
+	</div>
+	
+	<div class="article">
+		<div class="row">
+		
+			<div class="col-md-6">
+				<!-- Standard button -->
+				<button type="button" class="btn btn-default">Default</button>
+
+				<!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+				<button type="button" class="btn btn-primary">Primary</button>
+
+				<!-- Indicates a successful or positive action -->
+				<button type="button" class="btn btn-success">Success</button>
+
+				<!-- Contextual button for informational alert messages -->
+				<button type="button" class="btn btn-info">Info</button>
+
+				<!-- Indicates caution should be taken with this action -->
+				<button type="button" class="btn btn-warning">Warning</button>
+
+				<!-- Indicates a dangerous or potentially negative action -->
+				<button type="button" class="btn btn-danger">Danger</button>
+
+				<!-- Deemphasize a button by making it look like a link while maintaining button behavior -->
+				<button type="button" class="btn btn-link">Link</button>
+			</div>
+			
+			
+			<div class="col-md-6">
+				<h1>H1 Title</h1>
+				<h2>H2 Title</h2>
+				<h3>H3 Title</h3>
+				<h4>H4 Title</h4>
+				
+			</div>	
+			
+			<div class="col-md-6">
+				
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h3 class="panel-title">Panel title</h3>
+					</div>
+					<div class="panel-body">
+						<p>
+							Type : <b>Gratuit jusqu'à 20 foyers</b> ( actuellement 1 foyers dans votre groupe)  
+						</p>
+						<p>
+							<button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-chevron-right"></span> Primary</button>
+						</p>
+						
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+
+	
+</div>
+<div class="col-md-4">
+	
+	
+	
+	
+	<div class="block" >
+		
+		                           
+                        Le Lorem Ipsum est simplement du <strong>faux texte</strong> employé dans <a href="/">la composition</a>
+                        et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, 
+                        quand un peintre anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte.
+                        Il n'a pas fait que survivre cinq siècles, mais s'est aussi adapté à la bureautique informatique, sans que son contenu n'en soit modifié.
+                      
+                    
+		
+	</div>
+	
+	<div class="block">
+		<h3>Permanences</h3>
+		
+		<p>N'oubliez pas de vous inscrire pour aider lors des livraisons</p>
+		
+		<ul>
+			<li>Liste 1</li>
+			<li>Liste 2</li>
+		</ul>
+	</div>
+	
+	<div class="alert alert-danger">
+		<p>
+			Attention, vous n'avez défini aucun mot de passe pour votre compte !
+		</p>
+		<a href="/user/definePassword" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-right"></span> Définir un mot de passe</a>
+		
+	</div>
+</div>
+::end::

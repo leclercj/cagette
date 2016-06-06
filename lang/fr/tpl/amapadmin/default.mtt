@@ -15,8 +15,18 @@
 				
 				<a href="/amapadmin/addimage/" class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-picture"></span>&nbsp;Définir un logo</a>
 			</p>
+			
+			<hr/>
+			
 			<p>
-				
+				Votre groupe a une page publique, que vous pouvez utiliser pour communiquer à l'exterieur comme un mini-site.<br/>
+				Copiez-coller l'adresse URL de la page et n'hésitez pas à la partager pour faire connaitre votre groupe.<br/>				
+			</p>
+			<p>
+				<pre>http://::HOST::/group/::user._amap.id::</pre>
+			</p>
+			<p>
+				<a href="/group/::user._amap.id::" class="btn btn-default btn-sm"> <span class="glyphicon glyphicon-chevron-right"></span>&nbsp;Page publique</a>
 			</p>
 			
 		</div>

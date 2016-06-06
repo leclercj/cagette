@@ -22,6 +22,20 @@
 		<h2>Adhérents</h2>
 	::end::
 	
+	
+	::if select=="newusers"::
+		<hr/>
+		<p style="text-align:center;">
+			Vous pouvez inviter par email tous les adhérents qui ne se sont jamais connecté à Cagette.net en un seul clic.
+			<br/>
+			Attention la page peut mettre un peu de temps à s'afficher si il y a beaucoup d'emails à envoyer.
+		</p>
+		<p style="text-align:center;">
+			<a href="/member/invite/?token=::token::" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-envelope"></span> Envoyer des invitations</a>
+		</p>
+	::end::
+	
+	
 
 	<table class="table table-bordered table-hover table-striped"  style="width:100%;">
 		
@@ -67,28 +81,12 @@
 
 	<div>
 		
-		<a href="/member/insert" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> Nouvel adhérent</a>	
+		<a href="/member/insert" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Nouvel adhérent</a>	
 		$$export(::Web.getURI()+"?"+Web.getParamsString()+"&csv=1"::)
+		<a href="/member/import" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-save"></span> Importer</a>
 
 	</div>
-	
-	::if select=="newusers"::
-		<hr/>
-		<p style="text-align:center;">
-			Vous pouvez inviter par email tous les adhérents qui ne se sont jamais connecté à Cagette.net en un seul clic :
-			<br/>
-			<a href="/member/invite/?token=::token::" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-envelope"></span> Envoyer des invitations</a>
-			<br/>
-			Attention la page peut mettre un peu de temps à s'afficher si il y a beaucoup d'emails à envoyer.
-		</p>
-		
-	
-	::end::
-	
-	
-	
-	 
-	<!--$$export(::Web.getURI()::?::Web.getParamsString():: )-->
+
 	
 </div>
 </div>
@@ -123,11 +121,11 @@
 	
 	
 	<div class="block">
-		<h3>Importation</h3>
+		<h3>Liste d'attente</h3>
 		<p>
-		Pour éviter de rentrer à la main tous vos adhérents, vous pouvez importer une grande quantité d'adhérents à partir d'un tableur comme Excel ou Libre Office.
+		Vous avez <b>::waitingList::</b> personnes en liste d'attente.
 		<br/>
-		<a href="/member/import" class="btn btn-default btn-sm">Importer</a>
+		<a href="/member/waiting" class="btn btn-default btn-sm">Afficher la liste</a>
 		</p>
 	</div>
 	

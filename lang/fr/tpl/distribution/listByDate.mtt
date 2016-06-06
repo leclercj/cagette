@@ -44,6 +44,7 @@
 		<table class=""  style="width:100%;">
 				::set name = ""::
 				::set total = 0::
+				::set productNum = 0::
 				<tr>
 					<th>Nom</th>
 					<th>Coordonnées</th>
@@ -66,7 +67,7 @@
 							<b>
 								::m.userName:: 
 								::set total = 0::
-							
+								::set productNum = 0::
 							</b>
 						::end::
 						
@@ -83,6 +84,7 @@
 					::set name =  m.userName ::
 					<td>
 						::m.quantity::
+						::set productNum = productNum+m.quantity::
 					</td>
 					<td>
 						::m.productName::
@@ -110,21 +112,25 @@
 			
 				<!--TOTAL-->
 				::set next = orders[repeat.m.index+1]::
-						::if next==null || next.userName!=name::
-						<tr>
-							<th colspan="5"></th>
-							<th>TOTAL</th>
-							<th style="text-align:left;">::formatNum(total)::&nbsp;&euro;</th>
-							<th></th>
-						</tr>
-						::end::
+					::if next==null || next.userName!=name::
+					<tr>
+						<th></th>
+						<th>TOTAUX</th>
+						<th style="text-align:left;">::productNum::</th>
+						<th colspan="3"></th>
+						<th style="text-align:left;">::formatNum(total)::&nbsp;&euro;</th>
+						<th></th>
+					</tr>
+					::end::
 				::end::
 
 				</table>
 				
 				<p>::raw nl2br(user.getAmap().txtDistrib)::</p>
 		
-				<p><i>Appuyez sur "Control + P" pour imprimer cette page.</i></p>
+				<p>
+					<i>Appuyez sur "Control + P" pour imprimer cette page.</i>					
+				</p>
 	
 	
 	

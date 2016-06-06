@@ -3,9 +3,9 @@ import sys.db.Object;
 import sys.db.Types;
 import db.UserAmap;
 enum UserFlags {
-	HasEmailNotif4h;
-	HasEmailNotif24h;
-	//Lol;
+	HasEmailNotif4h;	//send notifications by mail 4h before
+	HasEmailNotif24h;	//send notifications by mail 24h before
+	//Tuto;			//enable tutorials
 }
 
 enum RightSite {
@@ -15,7 +15,7 @@ enum RightSite {
 @:index(email,unique)
 class User extends Object {
 
-	public static var EMPTY_PASS = "859738d2fed6a98902defb00263f0d35";
+	public static var EMPTY_PASS = "";
 	
 	public var id : SId;
 	public var lang : SString<2>;
@@ -38,7 +38,6 @@ class User extends Object {
 	public var zipCode:SNull<SString<32>>;
 	public var city:SNull<SString<25>>;
 	
-	//@:relation(amapId) public var amap:SNull<db.Amap>;   public var amapId:SNull<SInt>;
 	@:skip public var amap(get_amap, null) : Amap;
 	
 	public var cdate : SDate; 				//creation
@@ -46,12 +45,18 @@ class User extends Object {
 	
 	public var flags : SFlags<UserFlags>;
 	
+	@hideInForms public var tutoState : SNull<SData<{name:String,step:Int}>>; //tutorial state
+	
 	public function new() {
 		super();
+		
+		//default values
+		cdate = Date.now();
 		rights = sys.db.Types.SFlags.ofInt(0);
 		flags = sys.db.Types.SFlags.ofInt(0);
-		pass = haxe.crypto.Md5.encode( App.App.config.get('key') + ""); //pass = ""
-		ldate = cdate = Date.now();
+		flags.set(HasEmailNotif24h);
+		lang = "fr";
+		
 	}
 	
 	public override function toString() {
@@ -62,7 +67,11 @@ class User extends Object {
 		return rights.has(Admin) || id==1;
 	}
 	
+	/**
+	 * is this user the manager of the current group
+	 */
 	public function isAmapManager() {
+
 		//if (getAmap().contact == null) throw "Cette AMAP n'a pas de responsable général.";
 		var ua = getUserAmap(getAmap());
 		if (ua == null) return false;
@@ -120,28 +129,6 @@ class User extends Object {
 		return false;
 	}
 	
-	/**
-	 * nouvelle gestion des droits
-	 */
-	//public function hasRight(right:db.Rights.RightType, ?subject:Int):Bool {
-		//
-		////ces deux statuts donnent accès à tout
-		//if (isAdmin() || isAmapManager()) return true;
-		//
-		//var rights = db.Rights.manager.search($user == App.current.user && $amap == App.current.user.amap, false);
-		//if (rights.length == 0) return false;
-		//var hasright = Lambda.filter(rights, function(r) return r.rightType == right).length > 0;
-		//
-		//switch(right) {
-			////case db.Rights.RightType.ContractAdmin :
-			//
-			//default:
-				//return hasright;
-			//
-		//}
-		//
-	//}
-	
 	public function getContractManager(?lock=false) {
 		return Contract.manager.search($amap == amap && $contact == this, false);
 	}
@@ -192,7 +179,7 @@ class User extends Object {
 	/**
 	 * renvoie les commandes à partir d'une liste de contrats
 	 */
-	public function getOrdersFromContracts(c:List<db.Contract>):List<db.UserContract> {
+	public function getOrdersFromContracts(c:Iterable<db.Contract>):List<db.UserContract> {
 		var cids = Lambda.map(c,function(m) return m.id);
 		var pids = Lambda.map(db.Product.manager.search($contractId in cids,false), function(x) return x.id);
 		return UserContract.manager.search(($userId == id || $userId2 == id) && $productId in pids, false);		
@@ -217,6 +204,7 @@ class User extends Object {
 		
 		if (App.current.user != null && id != App.current.user.id) throw "cette fonction n'est valable que pour l'utilisateur en cours";
 		if (App.current.session == null) return null;
+		if (App.current.session.data == null ) return null;
 		var a = App.current.session.data.amapId;
 		if (a == null) {
 			//throw handler.Handler.HandlerAction.ActGoto("/user/choose");
@@ -393,7 +381,6 @@ class User extends Object {
 		
 		if (pass!=null && pass != "" && pass != EMPTY_PASS) throw "cet utilisateur ne peut pas recevoir d'invitation";
 		
-		
 		var group : db.Amap = null;
 		
 		if (App.current.user == null) {			
@@ -403,24 +390,25 @@ class User extends Object {
 			group = App.current.user.amap;	
 		}
 		
-		if (group == null) throw "cet utilisateur n'est affilié à aucun groupe";
-		
 		//store token
 		var k = sugoi.db.Session.generateId();
 		sugoi.db.Cache.set("validation" + k, this.id, 60 * 60 * 24 * 7); //expire dans une semaine
 		
 		
-		var e = new ufront.mail.Email();		
-		e.setSubject("Invitation "+group.name);
+		var e = new ufront.mail.Email();
+		if (group == null){
+			e.setSubject("Invitation "+group.name);	
+		}else{
+			e.setSubject("Invitation Cagette.net");
+		}
+		
 		e.to(new ufront.mail.EmailAddress(this.email,this.getName()));
 		e.from(new ufront.mail.EmailAddress(App.config.get("default_email"),"Cagette.net"));			
 		
-		var html = App.current.processTemplate("mail/invitation.mtt", { email:email, email2:email2, group:group.name,name:firstName,k:k } );		
+		var html = App.current.processTemplate("mail/invitation.mtt", { email:email, email2:email2, group:(group==null?null:group.name),name:firstName,k:k } );		
 		e.setHtml(html);
 		
 		App.getMailer().send(e);
-		
-		
 	}
 	
 	/**

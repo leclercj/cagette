@@ -2,9 +2,20 @@ package controller;
 import db.Distribution;
 import db.UserContract;
 import haxe.web.Dispatch;
+import sugoi.form.elements.StringInput;
 import sugoi.tools.ResultsBrowser;
+import Common;
+import tools.ArrayTool;
 
 class Main extends Controller {
+	
+	
+	/**
+	 * public pages 
+	 */
+	function doGroup(d:haxe.web.Dispatch){
+		d.dispatch(new controller.Group());
+	}
 
 	@tpl("home.mtt")
 	function doDefault() {
@@ -13,10 +24,6 @@ class Main extends Controller {
 		if (app.user != null) {
 			
 			if(app.user.amap==null) throw Redirect("/user/choose");
-		
-			var e = new event.Event();
-			e.id = "displayHome";
-			App.current.eventDispatcher.dispatch(e);
 
 			view.amap = app.user.getAmap();
 			
@@ -28,15 +35,15 @@ class Main extends Controller {
 			view.contractsWithDistributors = Lambda.filter(app.user.getContracts(), function(c) return c.distributorNum > 0);
 			
 			//DISTRIBUTIONS
- 			var orders = app.user.getOrders();
+ 			/*var orders = app.user.getOrders();
 			var contractIds = Lambda.map(orders, function(c) return c.product.contract.id);
 			//les distribs dans lesquelles j'ai des produits a prendre
 			var distribs = Distribution.manager.search( ($contractId in contractIds) && $end > Date.now(),{orderBy:date,limit:10}, false );
-			
+			*/
 			/**
 			 * HashMap de jours ( ie "2014-11-01" ), contenant les différentes distrib, pouvant impliquer plusieurs produits (userContracts)
 			 */
-			var mydistribs = new Map<String, Array<{distrib:Distribution,orders:Array<db.UserContract>}> >();
+			/*var mydistribs = new Map<String, Array<{distrib:Distribution,orders:Array<db.UserContract>}> >();
 			
 			for ( d in distribs) {
 				
@@ -60,38 +67,40 @@ class Main extends Controller {
 					}
 				}
 				
-				
-				
-				
-				
 				//do not push empty orders list
 				if (x.orders.length > 0) {
-					var key = d.end.toString().substr(0,10)+"-p"+d.place.id;				
+					var key = d.getKey();			
 					var t = mydistribs.get(key);
 					if (t == null) {
-						t = [];
-						mydistribs.set(key, t);
+						t = [];						
 					}
 					
-					t.push( x );	
+					t.push( x );
+					mydistribs.set(key, t);
 				}
-				
-				
-				
 			}
+			
+			
+			view.distribs = out;	*/
+			
+			
+			//need to define a password !
+			view.nopass = (app.user.pass == db.User.EMPTY_PASS);
+			//freshly created group
+			view.newGroup = app.session.data.newGroup == true;
+
+			
+			var distribs = getNextMultiDeliveries();
 			
 			//fix bug du sorting (les distribs du jour se mettent en bas)
 			var out = [];
-			for (x in mydistribs) out.push(x);
+			for (x in distribs) out.push(x);
 			out.sort(function(a, b) {
-				return Std.int(a[0].distrib.date.getTime()/1000) - Std.int(b[0].distrib.date.getTime()/1000);
+				return Std.int(a.startDate.getTime()/1000) - Std.int(b.endDate.getTime()/1000);
 			});
 			
-			view.distribs = out;	
+			view.distribs = out;
 			
-			
-			//pass a definir
-			view.nopass = (app.user.pass == db.User.EMPTY_PASS);
 			
 		}else {
 			throw Redirect("/user/login");
@@ -99,10 +108,116 @@ class Main extends Controller {
 		
 	}
 	
-	@admin
-	function doDb(d:Dispatch) {
-		d.parts = []; //desactive haxe.web.Dispatch
-		sys.db.Admin.handler();
+	/**
+	 * Get next multi-deliveries 
+	 * ( deliveries including more than one vendors )
+	 */
+	public function getNextMultiDeliveries(){
+		
+		var out = new Map < String, {
+			place:db.Place, //common delivery place
+			startDate:Date, //global delivery start
+			endDate:Date,	//global delivery stop
+			orderStartDate:Date, //global orders opening date
+			orderEndDate:Date,//global orders closing date
+			active:Bool,
+			products:Array<ProductInfo>, //available products ( if no order )
+			myOrders:Array<{distrib:Distribution,orders:Array<db.UserContract>}>	//my orders
+			
+		}>();
+		
+		var now = Date.now();
+		var now9 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+	
+		var contracts = db.Contract.getActiveContracts(App.current.user.amap);
+		var cids = Lambda.map(contracts, function(p) return p.id);
+		
+		//var pids = Lambda.map(db.Product.manager.search($contractId in cids,false), function(x) return x.id);
+		//var out =  UserContract.manager.search(($userId == id || $userId2 == id) && $productId in pids, lock);	
+		
+		//available deliveries + next deliveries in less than a month		
+		var distribs = db.Distribution.manager.search(($contractId in cids) && ($date >= now9) , { orderBy:date }, false);
+		var inOneMonth = DateTools.delta(now9, 1000.0 * 60 * 60 * 24 * 30);
+		
+		for (d in distribs) {			
+			
+			var o = out.get(d.getKey());
+			if (o == null) o = {place:d.place, startDate:d.date, active:null, endDate:d.end, products:[], myOrders:[], orderStartDate:null,orderEndDate:null};
+			
+			//my orders
+			var orders = d.contract.getUserOrders(app.user,d);
+			if (orders.length > 0){
+				o.myOrders.push({distrib:d,orders:Lambda.array(orders)});
+			}else{
+				
+				if (!app.user.amap.hasShopMode() ) {
+					//no "order block" if no shop mode
+					continue;
+				}
+				
+				//if its a constant order contract, skip this delivery
+				if (d.contract.type == db.Contract.TYPE_CONSTORDERS) continue;
+				
+				//products preview if no orders
+				for ( p in d.contract.getProductsPreview(9)){
+					o.products.push( p.infos() );	
+				}
+			}
+			
+			if (d.contract.type == db.Contract.TYPE_VARORDER){
+				
+				//old distribs may have an empty orderStartDate
+				if (d.orderStartDate == null) {
+					continue;
+				}
+				
+				//if order opening is more far than 1 month, skip it
+				if (d.orderStartDate.getTime() > inOneMonth.getTime() ){
+					continue;
+				}
+				
+				//display closest opening date
+				if (o.orderStartDate == null){
+					o.orderStartDate = d.orderStartDate;
+				}else if (o.orderStartDate.getTime() > d.orderStartDate.getTime()){
+					o.orderStartDate = d.orderStartDate;
+				}
+				
+				//display farest closing date
+				if (o.orderEndDate == null){
+					o.orderEndDate = d.orderEndDate;
+				}else if (o.orderEndDate.getTime() < d.orderEndDate.getTime()){
+					o.orderEndDate = d.orderEndDate;
+				}
+				
+				
+			}
+			
+			//shuffle and limit product lists			
+			o.products = ArrayTool.shuffle(o.products);			
+			o.products = o.products.slice(0, 9);
+			
+			out.set(d.getKey(), o);
+		}
+		
+		//decide if active or not
+		for( k in out.keys()){
+			var o = out.get(k);
+			
+			if (o.orderStartDate == null) continue; //constant orders
+			
+			if (now.getTime() >= o.orderStartDate.getTime()  && now.getTime() <= o.orderEndDate.getTime() ){
+				//order currently open
+				o.active = true;
+				
+			}else {
+				o.active = false;
+				
+			}
+		}	
+		
+		
+		return Lambda.array(out);
 	}
 	
 	
@@ -116,6 +231,12 @@ class Main extends Controller {
 		d.dispatch(new controller.Cron());
 	}
 	
+	function doApi(d:Dispatch) {
+		d.dispatch(new controller.Api());
+	}
+	
+	@tpl("cssDemo.mtt")
+	function doCssdemo() {}
 	
 	@tpl("form.mtt")
 	function doInstall() {
@@ -124,9 +245,9 @@ class Main extends Controller {
 			view.title = "Installation de Cagette.net";
 
 			var f = new sugoi.form.Form("c");
-			f.addElement(new sugoi.form.elements.Input("amapName", "Nom de votre groupement","",true));
-			f.addElement(new sugoi.form.elements.Input("userFirstName", "Votre prénom","",true));
-			f.addElement(new sugoi.form.elements.Input("userLastName", "Votre nom de famille","",true));
+			f.addElement(new StringInput("amapName", "Nom de votre groupement","",true));
+			f.addElement(new StringInput("userFirstName", "Votre prénom","",true));
+			f.addElement(new StringInput("userLastName", "Votre nom de famille","",true));
 
 			if (f.checkToken()) {
 	
@@ -247,6 +368,12 @@ Called from controller/Main.hx line 117
 	}
 	
 	@logged
+	function doTuto(d:Dispatch) {
+		
+		d.dispatch(new controller.Tuto());
+	}
+	
+	@logged
 	function doStats(d:Dispatch) {
 		view.category = 'stats';
 		d.dispatch(new Stats());
@@ -329,6 +456,11 @@ Called from controller/Main.hx line 117
 		d.dispatch(new controller.admin.Admin());
 	}
 	
+	@admin
+	function doDb(d:Dispatch) {
+		d.parts = []; //disable haxe.web.Dispatch
+		sys.db.Admin.handler();
+	}
 	
 	
 }

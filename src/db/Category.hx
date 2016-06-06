@@ -1,5 +1,6 @@
 package db;
 import sys.db.Types;
+import Common;
 
 class Category extends sys.db.Object
 {
@@ -15,5 +16,11 @@ class Category extends sys.db.Object
 	 */
 	public function getColor():String {
 		return App.current.view.intToHex(db.CategoryGroup.COLORS[categoryGroup.color]);
+	}
+	
+	public function infos():CategoryInfo{
+		
+		return {id:id, name:name, /*parent:categoryGroup.id, /*pinned:categoryGroup.pinned*/};
+		
 	}
 }

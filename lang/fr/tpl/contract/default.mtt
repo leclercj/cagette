@@ -7,11 +7,14 @@
 		
 		<!-- COMMANDES AMAP -->
 		
-		<h4>Contrats AMAP</h4>		
+		<h3>Contrats AMAP</h3>
+		
+		::foreach c constOrders::
+		
+		<h4>::c.contract.name::</h4>
 		<table class="table table-bordered table-condensed" >
 			<tr>
 				<th>Qté</th>
-
 				<th>Produit</th>
 				<th><a href="#" data-toggle="tooltip" data-placement="top" title="Prix unitaire TTC">P.U</a></th>
 				<th>Sous-total</th>
@@ -19,46 +22,58 @@
 				<th>Total</th>
 				<th>Payé</th>
 			</tr>
-			
-			::foreach m constOrders::
-				<tr>
+		::set total = 0::
+		::foreach m c.orders::
+			<tr>
+				<td>
+					::m.quantity:
+				</td>
+				<td>
+					::m.productName::
+				</td>
+				<td>
+					::formatNum(m.productPrice)::&nbsp;&euro;
+				</td>
+				<td>
+					::formatNum(m.subTotal)::&nbsp;&euro;
+				</td>
+				<td>
+					<!-- frais -->
+					::if m.percentageValue!=null::
+					<a href="#" data-toggle="tooltip" data-placement="top" title="::m.percentageName:: : ::m.percentageValue:: %">
+						::formatNum(m.fees)::&nbsp;&euro;
+					</a>
+					::end::
+				</td>
+				<td>
+					<!-- total -->
+					::formatNum(m.total)::&nbsp;&euro;	
+					::set total = total + m.total::
+				</td>
+				<td>
+					::if m.paid==true::
+					<span style="color:#00AA00;">Payé</span>
+					::else::
+					<span style="color:#DD0000;">Non payé</span>
+					::end::
+				</td>
 				
-					<td>
-						::m.quantity:
-					</td>
-					<td>
-						::m.productName::
-					</td>
-					<td>
-						::formatNum(m.productPrice)::&nbsp;&euro;
-					</td>
-					<td>
-						::formatNum(m.subTotal)::&nbsp;&euro;
-					</td>
-					<td>
-						<!-- frais -->
-						::if m.percentageValue!=null::
-						<a href="#" data-toggle="tooltip" data-placement="top" title="::m.percentageName:: : ::m.percentageValue:: %">
-							::formatNum(m.fees)::&nbsp;&euro;
-						</a>
-						::end::
-					</td>
-					<td>
-						<!-- total -->
-						::formatNum(m.total)::&nbsp;&euro;						
-					</td>
-					<td>
-						::if m.paid==true::
-						<span style="color:#00AA00;">Payé</span>
-						::else::
-						<span style="color:#DD0000;">Non payé</span>
-						::end::
-					</td>
-					
-				</tr>
-			::end::			
+			</tr>
+		::end::	
+		<tr>
+			<td colspan="7" class="text-right">
+				<b>Total :
+				::formatNum(total)::&nbsp;&euro;</b>
+			
+				::set d = c.contract.getDistribs(false,null).length::
+				( soit ::formatNum(d*total)::&nbsp;&euro; pour ::d:: livraisons )
+			
+				
+			</td>
+		</tr>
+	
 		</table>
-		
+		::end::
 		
 	</div>	
 	::end::
@@ -67,6 +82,9 @@
 	<!-- COMMANDES VARIABLES-->
 	::if count(varOrders)>0::
 	<div class="article">
+		
+		<h3>Commandes variables</h3>
+		
 		::foreach d varOrders::
 			<h4>Commande livrée le ::hDate(d.date)::</h4>
 			<table class="table table-bordered table-condensed" >
@@ -86,7 +104,7 @@
 							::o.quantity::
 						</td>
 						<td>
-							<a href="#" onclick="_.overlay('/shop/productInfo/::o.productId::')">
+							<a href="#" onclick="_.overlay('/shop/productInfo/::o.productId::','::o.productName::')">
 								<img src="::o.productImage::" style="width:32px;height:32px;" />
 								 ::o.productName::
 							</a>
@@ -110,7 +128,7 @@
 				::end::	
 				<tr>
 					<td colspan="4">
-						$$edit(Modifier cette commande,::"/contract/editOrderByDate/"+d.date::)
+						$$edit(Modifier cette commande,::"/contract/editOrderByDate/"+d.date.toString().substr(0,10)::)
 						
 					</td>
 					<td>TOTAL</td>
@@ -132,6 +150,52 @@
 		</p>
 		$$edit(Modifier,/account/edit)
 	</div>
+	
+	
+	::if user.isAmapManager()::
+	<h3>Tutoriels</h3>
+	<div class="article">
+		
+		
+		
+		<table class="table">
+			
+			::foreach t tutos::
+				<tr>
+					<td>::t.name::</td>
+					<td>  
+						::if t.completion==null::
+							<a href="/contract/?startTuto=::t.key::" class="btn btn-default btn-xs">
+								<span class="glyphicon glyphicon-play"></span> Commencer
+							</a>
+						::else::
+							
+							<a href="/contract/?stopTuto=::t.key::" class="btn btn-primary btn-xs">
+								<span class="glyphicon glyphicon-remove"></span> Stop
+							</a>								
+						::end::
+					</td>
+				</tr>
+			::end::
+			
+		</table>
+		
+			::if stopTuto:: 
+			<div id="stopTuto" data-toggle="popover" title="Tutoriel stoppé" data-placement="left" data-content="Vous pourrez le réactiver en revenant ici." ></div>
+			<script>
+				
+				$(function(){
+				
+					setTimeout(function() { $("#stopTuto").popover("show"); }, 1000);
+					
+				});
+				
+			</script>
+			::end::		
+	</div>	
+	::end::
+	
+	
 </div>
 
 

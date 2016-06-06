@@ -1,6 +1,5 @@
 ::use 'amapadmin/design.mtt'::
 
-
 		<h3>Gestion des droits et accès</h3>		
 		
 		$$insert(Ajouter un droit,/amapadmin/editRight)

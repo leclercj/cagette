@@ -7,11 +7,28 @@
 		::end::
 		
 		<div style="margin:8px 0;">
+
+			
 			::if distribution!=null::
-			<a href="/contractAdmin/edit/::c.id::?d=::distribution.id::" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
+			<a href="/contractAdmin/edit/::c.id::?d=::distribution.id::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
 			::else::
-			<a href="/contractAdmin/edit/::c.id::" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
+			<a href="/contractAdmin/edit/::c.id::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
 			::end::
+			
+			::if distribution!=null::
+				$$export(::"/contractAdmin/orders/"+c.id+"?csv=1&d="+distribution.id::)
+				<a href="/contractAdmin/ordersByProduct/::c.id::?d=::distribution.id::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-list"></span>  Récapitulatif par produits</a>
+				<a href="/distribution/list/::distribution.id::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-print"></span> Liste d'émargement</a>
+			
+			::else::
+				$$export(::"/contractAdmin/orders/"+c.id+"?csv=1"::)
+				<a href="/contractAdmin/ordersByProduct/::c.id::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-list"></span>  Récapitulatif par produits</a>
+			::end::
+			
+			
+			
+			
+			
 		</div>
 		::set total = 0::
 		::set totalAdh = 0::
@@ -112,24 +129,4 @@
 					<b>::totalAdh::</b> adhérents dans cette commande.					
 				</div>
 
-
-				<div>
-					::if distribution!=null::
-					<a href="/contractAdmin/edit/::c.id::?d=::distribution.id::" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
-					::else::
-					<a href="/contractAdmin/edit/::c.id::" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> Nouvelle commande</a>	
-					::end::
-					
-					::if distribution!=null::
-					$$export(::"/contractAdmin/orders/"+c.id+"?csv=1&d="+distribution.id::)
-					<a href="/contractAdmin/ordersByProduct/::c.id::?d=::distribution.id::" class="btn btn-default btn-sm">Récapitulatif par produits</a>
-					::else::
-					$$export(::"/contractAdmin/orders/"+c.id+"?csv=1"::)
-					<a href="/contractAdmin/ordersByProduct/::c.id::" class="btn btn-default btn-sm">Récapitulatif par produits</a>
-					::end::
-					
-					
-					
-				</div>		
-		
 ::end::

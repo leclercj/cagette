@@ -7,11 +7,22 @@
 	<p>
 		Bonjour $$nullSafe(::name::),
 	</p>
+	
+	
 	<p>
+		::if group!=null::
+		
 		En tant que membre du groupe<br/>
 		<b style="font-size:140%;">::group::</b><br/>
-		vous avez été pré-inscrit sur le logiciel Cagette.net		
+		vous avez été pré-inscrit sur le logiciel Cagette.net
+		
+		::else::
+		
+		<b>Vous avez été pré-inscrit sur Cagette.net</b>
+		
+		::end::
 	</p>
+	
 	<p>
 		Ce logiciel en ligne facilite l'organisation du groupe en vous informant sur les prochaines dates de livraisons,
 		les commandes et les contrats en cours.

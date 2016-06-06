@@ -1,36 +1,40 @@
-h1{
-	font-family:CSS(" 'Cantora One', sans-serif !important");
-	color: CSS(" #583816 !important");
+
+/**
+
+	Cagette.net stylesheet.
+	
+	This file works with the bootstrap theme.
+	To compile the bootstrap theme go to bower_components/bootstrap
+	and call "grunt dist".
+	The bootstrap theme variables are defined in less/variables.less
+
+
+**/
+
+
+h1,h2,h3,h4{
+
 	margin-top: CSS("4px !important");
 	margin-bottom: CSS("8px !important");
-	font-weight:bold !important;
-}
-h1{
-	font-size: 28px !important;
-}
-h2{
-	font-size: 24px !important;
+
 }
 
-h2,h3,h4{
-	font-family:CSS(" 'Cantora One', sans-serif !important");
-	color:CSS(" #007700 !important");
-	font-weight:CSS("normal !important");
-	margin-top: CSS("4px !important");
-	margin-bottom: CSS("8px !important");
+h1{
+	color:CSS(" #583816 !important");
+	
+	a{
+		color:CSS(" #583816 !important");	
+	}
 }
-a{
+h2,h3,h4{
 	color:CSS(" #007700 !important");
+}
+
+
+a{
 	cursor:pointer;
 }
-a.btn{
-	color:CSS(" #333333 !important");
-}
-
-th{
-	background-color:CSS(" #fcf8e3 !important");
-}
-
+/*-------------------*/
 
 #footer{
 	text-align:center;
@@ -43,14 +47,14 @@ th{
 	}
 }
 
-pre{
+/*pre{
 	padding:8px;
 	background:white;
-}
+}*/
 
 body{
-	background:#FFE28B url('/img/bg.gif');
-	//position: relative;
+	background:url('/img/bg.gif');
+	
 }
 
 .sqlLog{
@@ -110,7 +114,7 @@ span.panel-title{
 
 /* block marron */
 .block{	
-	margin-bottom : 32px;
+	margin-bottom: 12px;
 	background : #F0D277;
 	border-radius : 8px;
 	position : relative;
@@ -136,7 +140,6 @@ table.product{
 	
 	height:135px;
 	overflow:auto;
-	//border:1px solid #000000 ;
 	
 	.desc{
 		font-size:90%;
@@ -145,69 +148,79 @@ table.product{
 	
 }
 
-//in shop page
-.product{
-	width:49%;
-	display: inline-block;
-	img{
-		//width:64px;
-		//height:64px;
-	}
-	.name{
-		padding-left:8px;
+/*
+	SHOP
+*/
+
+.shop{
+	
+	
+	.header{
+		background-color:#749E3C;
+		display:inline-block;
+		width:100%;
+		
+		border-top-left-radius:8px;
+		border-top-right-radius:8px;
+		padding:12px;
+		
+		font-size: 16px;
+		line-height: 22px;
+		
+		color:white;
+		a{
+			color:white;
+		}
+		
+		.info{
+			font-weight: bold;	
+		}
 	}
 	
-}
-.price{
-		font-weight:bold;
-		font-size:130%;
+	
+	.body{
+		background:white;
+		display:inline-block;
+		width:100%;
+		padding-top: 12px;
+		
+		.catHeader{
+			font-weight:bold;
+			font-size:1.2em;
+			color:#583816;
+			border-bottom:1px solid #CCC;
+			width:100%;
+		}
 	}
+	
+	
+	.product{
+		
+		display: inline-block;
+		
+		.name{
+			padding-left:8px;
+		}
+		
+		.warning{
+			font-size:11px;
+			color:#900;
+			font-weight:bold;
+		}
+		
+	}
+
+}
+
+
+.price{
+	font-weight:bold;
+	font-size:1.3em;
+}
+	
 .vat{
 	color:#999999;
 	//font-size:80%;
-}
-
-/*.overlay{
-	position:absolute;
-	width:100%;
-	height:100%;
-	top: 0;
-	left: 0;
-}*/
-
-.overlayBackground{
-	/*position:absolute;
-	top:0;
-	left:0;
-	background:#000;
-	opacity:0.5;
-	width:100%;
-	height:100%;*/
-	position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 10;
-}
-.overlayContent{
-	/*position:fixed;
-	width:50%;
-	*/
-	width: 50%;
-    position: fixed;
-    
-    left: 25%;
-    margin:auto;
-	top:20px;
-	
-    z-index: 11;
-	
-	.article{
-		padding:24px;
-	}
-	
 }
 
 
@@ -215,8 +228,8 @@ table.product{
 
 #cartContainer.scrolled{
 	
-		position:fixed;
-		top:125px;
+	position:fixed;
+	top:125px;
 }
 
 .cartDiv{
@@ -270,7 +283,7 @@ i{
 	margin-top:13px;
 	padding:8px;
 	font-size:13px;
-	background-color:#EEE;
+	//background-color:#F9ECC4;
 	border-top:1px solid #CCC ;
 }
 
@@ -289,29 +302,35 @@ i{
 	display: block;
 	position: absolute;
 	top: -16px;
-	left: -22px;
+	left: -18px;
 	
-	border-radius:3px;
+	border-radius:8px;
 	background-color:#B2823F;
 	color:#FFF;
-	font-size:11px;
+	font-size:13px;
 	line-height: 13px;
 	font-weight:bold;
-	/*font-family: "Cantora One", "sans-serif";*/
 	
 	text-align:center;
 	vertical-align:middle;	
 	
 	width: 90px;
-	//height:100px;
-	margin:4px;
+	margin:0;
 	padding:4px;
+	box-shadow: CSS("4px 4px 0px #8E662A");
 	
-	div{
-		margin-top:4px;
-		
+	.box{
+		line-height:22px;
+		background-color:#FFFFFF;
+		color:#666;
+		font-size:14px;
+		font-weight:bold;
+		text-align:center;
+	    margin: 0px;
+		border-radius:4px;
 	}
-	
+
+	/* place link */
 	a{
 		color:CSS(" #FFFFFF !important");
 	}
@@ -320,10 +339,9 @@ i{
 	}
 }
  
-.logo{
-	
-}
 
+
+/* categories */
 span.tag{
 	color:white;
 	font-size:80%;
@@ -338,3 +356,189 @@ span.tag.active{
 	font-size: 16px;
 	line-height: 45px;
 }
+
+
+/**
+	Popovers for help and tutorials
+**/
+.popover{
+
+	color:white;
+	
+	
+	h3.popover-title{
+		padding: 4px;
+		color:CSS("#BB9931 !important");
+		border-bottom:CSS("1px solid #BB9931 !important");
+		font-weight:CSS("bold !important");
+		font-family:CSS("'Arial','sans-serif' !important");
+		//background-color:CSS("#583816 !important");	
+	}
+	
+	.footer{
+		
+		border-top: 1px solid #BB9931;
+		height: 45px;
+		padding: 12px 0;
+    
+		
+		.pull-left .btn{
+		
+			background-color:#583816;
+			color:white;
+			border:1px solid white;
+		}
+		
+		.pull-right .btn{
+		
+			background-color:#FC0;
+			color:#583816;
+			border:1px solid #583816;
+		}
+	}
+	
+	
+	
+	
+}
+
+/* skin a modal like a tuto popover */ 
+.modal.help{
+	.modal-header{
+		font-size: 1.3em;
+		color:CSS("#BB9931 !important");
+		border-bottom:CSS("1px solid #BB9931 !important");
+		font-weight:CSS("bold !important");
+		font-family:CSS("'Arial','sans-serif' !important");
+		background-color:CSS("#583816 !important");	
+	}
+	
+	.modal-content{
+		background-color:CSS("#583816 !important");
+		color:white;
+		
+	}
+	
+	.modal-footer{
+		border-top:CSS("1px solid #BB9931 !important");
+	}
+	
+}
+/* hightlight a zone for tutos */
+.highlight{
+	border: 2px dashed orange;
+    border-radius: 16px;
+}
+
+ 
+
+/* Distrib */
+.distrib{
+	
+	margin: 0px 0px 28px 0px;
+	position:relative;
+	
+	.header{
+		
+		display: block;
+		height: 72px;
+		overflow:hidden;
+		border-top-left-radius:8px;
+		border-top-right-radius:8px;		
+		color:#FFF;
+		
+		
+		.info{
+			font-size:16px;
+			line-height: 22px;
+			font-weight:bold;
+			/* place link */
+			a{
+				color:CSS(" #FFFFFF !important");
+			}
+			a:hover{
+				color:CSS(" #FFFFFF !important");
+			}
+		}
+		
+		vertical-align:middle;	
+		
+		margin:0;
+		padding: 6px 6px 6px 90px;
+
+		
+		.date{
+			line-height:23px;
+			background-color:#FFFFFF;
+			color:#666;
+			font-size:14px;
+			text-align:center;
+			margin: 0 8px 0 0;
+			border-radius:6px;
+			border: 4px solid #C6C6C6;
+		}
+
+		
+		
+		.address, .closing{
+			font-weight:normal;
+			font-size:0.9em;
+		
+			line-height: 16px;
+		}
+		
+		
+	}
+	
+	.header{
+		background-color:#749E3C;
+	}
+	
+	.header.disabled{
+		background-color:#999;
+	}
+	
+	.header.orders{
+		background-color:#B2823F;
+	}
+	
+	.myorder{
+		//background-color:#6F5026;
+		//color:white;
+		font-weight:bold;
+		//padding-left:50px;
+		color:#999;
+		background:white;
+		padding: 11px 0 4px 16px;
+	}
+	 
+	.content{
+		padding: 6px 6px 6px 6px;
+		//background-color:#F0D277;
+		//background-color:#C49657;
+		background-color:#85B14D;
+		border-bottom-left-radius:8px;
+		border-bottom-right-radius:8px;
+	}
+	
+	.content.disabled{
+		background:#AAA;
+	}
+	
+	.content.orders{
+		background:#FFF;
+		padding-left: 50px;
+	}
+	
+	/*.footer{
+		padding: 8px;
+		border-bottom-left-radius:8px;
+		border-bottom-right-radius:8px;
+		background-color:#F0D277;
+		height:50px;
+		border-top:1px solid #CCC;
+		
+	}*/
+	
+}
+ 

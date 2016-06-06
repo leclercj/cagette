@@ -28,10 +28,17 @@ class UserAmap extends Object
 	public var rights : SNull<SData<Array<Right>>>;
 	
 
+	static var CACHE = new Map<String,db.UserAmap>();
 	
 	
 	public static function get(user:User, amap:Amap, ?lock = false) {
-		return manager.select($user == user && $amap == amap, lock);
+		//SPOD doesnt cache elements with double primary key, so lets do it manually
+		var c = CACHE.get(user.id + "-" + amap.id);
+		if (c == null) {
+			c = manager.select($user == user && $amap == amap, true/*lock*/);		
+			CACHE.set(user.id + "-" + amap.id,c);
+		}
+		return c;	
 	}	
 	
 	
@@ -73,7 +80,7 @@ class UserAmap extends Object
 	
 	public function getRightName(r:Right):String {
 		return switch(r) {
-		case AmapAdmin : "Gestion "+App.current.view.wAmap();
+		case AmapAdmin : "Administrateur";
 		case Messages : "Messagerie";
 		case Right.Membership : "Gestion adhérents";
 		case ContractAdmin(cid) : 
@@ -107,6 +114,13 @@ class UserAmap extends Object
 		//}
 		//
 		//return (lastMemberShip.getTime() > lastRenewal.getTime());
+	}
+	
+	override public function insert(){
+		
+		App.current.event(NewMember(this.user,this.amap));
+		
+		super.insert();
 	}
 	
 }

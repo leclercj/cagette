@@ -1,0 +1,108 @@
+::use 'design.mtt'::
+<div class="col-md-12">
+		
+		<h2 style="margin:auto;">Choisissez une distribution :</h2>
+	
+		<div class="row">
+			
+			::if distribs.length==0::
+			<div class="alert alert-danger" class="col-md-12">
+				Il n'y a aucune distribution de planifiée pour l'instant.
+			</div>
+			::end::
+			
+			::foreach d distribs::
+			
+			<div class="col-md-4">
+				<div class="distrib">
+					::set active =""::
+					::if d.active==false:: ::set active="disabled":: ::end::
+					
+					<div class="header ::active::">
+						
+						::set s = getDate( d.startDate)::
+						
+						<div class="date" style="float:left;width:100px;">
+								<div>::s.dow::</div>
+								<div style="font-size:28px;color:#990000;">::s.d::</div>
+								<div>::s.m::</div>				
+						</div>
+						
+						
+						<div class="info">
+						
+						::set e = getDate(d.endDate)::
+						<span class="glyphicon glyphicon-time"></span> de ::s.h+":"+s.i:: à ::e.h+":"+e.i::
+						</div>	
+						
+						
+						::if d.place!=null:: 
+						<div class="info">
+						<span class="glyphicon glyphicon-map-marker"></span> <a href="/place/view/::d.place.id::">::d.place::</a>			
+						</div>
+						<div class="address">
+								$$nullSafe(::d.place.address1::)
+								$$nullSafe(::d.place.address2::)
+								$$nullSafe(::d.place.zipCode::)
+								$$nullSafe(::d.place.city::)
+						
+						</div>
+						::end::
+						
+							
+						
+
+					</div>
+						
+					
+					<div class="content">
+							
+						<div class="row">
+							::foreach p d.products::
+							
+							
+							<div class="col-md-3" data-toggle="tooltip" data-placement="top" title="::p.name::" >
+								<img class="img-responsive" src="::p.image::" style="height:80px;width:80px;margin:4px;"/> 
+							</div>
+							
+							
+							::end::
+							
+							
+						
+						</div>
+					
+						
+						
+					</div>
+					
+					<div class="footer" style="text-align:right;">
+						
+						::if d.active==true::
+						<a href="/shop/::d.place.id::/::d.startDate.toString().substr(0,10)::" class="btn btn-primary">
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							Commander
+						</a>
+						::else::
+							
+							<span class="glyphicon glyphicon-close"></span>
+							Ouverture des commandes<br/>
+							le ::hDate(d.startDate)::
+							
+						::end::
+					</div>
+					
+					
+				</div>
+					
+			</div>
+			::end::
+			
+		</div>
+	
+</div>
+
+
+
+
+::end::

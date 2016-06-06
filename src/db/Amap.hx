@@ -1,4 +1,5 @@
 package db;
+import sugoi.form.ListData.FormData;
 import sys.db.Object;
 import sys.db.Types;
 
@@ -7,6 +8,15 @@ enum AmapFlags {
 	ShopMode; 		//mode boutique
 	IsAmap; 		//Amap / groupement d'achat
 	ComputeMargin;	//compute margin instead of percentage
+	CagetteNetwork; //register in cagette.net groups directory
+}
+
+//user registration options
+enum RegOption{
+	Closed;
+	WaitingList; 
+	Open;
+	Full;
 }
 
 /**
@@ -38,12 +48,16 @@ class Amap extends Object
 	@hideInForms public var cdate : SDateTime;
 	@hideInForms @:relation(placeId) public var mainPlace : SNull<db.Place>;
 	
+	public var regOption : SEnum<RegOption>;
+	
 	public function new() 
 	{
 		super();
 		flags = cast 0;
+		flags.set(CagetteNetwork);
 		vatRates = ["TVA Alimentaire 5,5%" => 5.5, "TVA 20%" => 20];
 		cdate = Date.now();
+		regOption = WaitingList;
 		
 	}
 	
@@ -131,15 +145,17 @@ class Amap extends Object
 		return User.manager.unsafeObjects("Select u.* from User u,UserAmap ua where u.id=ua.userId and ua.amapId="+this.id+" order by u.lastName", false);
 	}
 	
-	public function getMembersFormElementData():Array<{key:String,value:String}> {
+	public function getMembersNum():Int{
+		return UserAmap.manager.count($amapId == this.id);
+	}
+	
+	public function getMembersFormElementData():FormData<Int> {
 		var m = getMembers();
 		var out = [];
-		var name = "";
 		for (mm in m) {
-			name = mm.getName();
-			if (mm.lastName2 != null) name = name + " / " + mm.lastName2 +" " + mm.firstName2;
+		
+			out.push({label:mm.getCoupleName() , value:mm.id});
 			
-			out.push({key:Std.string(mm.id),value:name });
 		}
 		return out;
 	}
@@ -195,6 +211,13 @@ class Amap extends Object
 		}else {
 			return Std.string(y) + "-" + Std.string(y+1);
 		}
+	}
+	
+	override public function insert(){
+		
+		App.current.event(NewGroup(this,App.current.user));
+		
+		super.insert();
 	}
 	
 	

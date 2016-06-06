@@ -23,8 +23,8 @@ class Product extends Object
 	public var stock : SNull<SFloat>; //if qantity can be float, stock should be float
 	
 	public var type : SInt;	//icones
-	@:relation(imageId)
-	public var image : SNull<sugoi.db.File>;
+	
+	@hideInForms @:relation(imageId) public var image : SNull<sugoi.db.File>;
 	
 	public var hasFloatQt:SBool; //this product can be ordered in "float" quantity
 	public var active : SBool; 	//if false, product disabled, not visible on front office
@@ -60,6 +60,13 @@ class Product extends Object
 		
 	}
 	
+	/**
+	 * get price including margins
+	 */
+	public function getPrice():Float{
+		return price + contract.computeFees(price);
+	}
+	
 	public function infos():ProductInfo {
 		return {
 			id : id,
@@ -67,7 +74,7 @@ class Product extends Object
 			type : Type.createEnumIndex(ProductType, type),
 			image : getImage(),
 			contractId : contract.id,
-			price : price + contract.computeFees(price),
+			price : getPrice(),
 			vat : vat,
 			vatValue: (vat != 0 && vat != null) ? (  this.price - (this.price / (vat/100+1))  )  : null,
 			contractTax : contract.percentageValue,
