@@ -1,7 +1,6 @@
 ::use 'contractadmin/design.mtt'::
 
 		<h3>Récapitulatif</h3>
-		
 		<table class="table table-bordered" style="width:400px;">
 			<tr>
 				<td>

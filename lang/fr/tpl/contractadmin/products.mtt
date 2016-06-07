@@ -51,7 +51,7 @@
 			</td>
 			<td>::formatNum(p.price)::&nbsp;&euro;</td>
 			<td>
-			::if c.hasStockManagement() ::
+			::if c.hasStockManagement()::
 				::if p.stock==null::
 					-
 				::else::
