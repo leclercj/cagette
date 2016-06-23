@@ -222,11 +222,10 @@ class Member extends Controller
 	 * Admin : Log in as this user for debugging purpose
 	 * @param	user
 	 * @param	amap
-	 */
-	@admin
+	 */	
 	function doLoginas(user:db.User, amap:db.Amap) {
 	
-		if (!app.user.isAdmin()) return;
+		if (!app.user.isAmapManager()) return;
 		
 		App.current.session.setUser(user);
 		App.current.session.data.amapId = amap.id;

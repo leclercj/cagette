@@ -3,38 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Liste d'émargement</title>
-	<style>
-	
-	body{
-		font-family:'Arial';
-		font-size:12px;
-	}
-	
-	table{
-		border-collapse: collapse;
-	}
-	
-	table tr td{
-		margin:0;
-		padding:4px;
-		
-		text-align:left;
-	}
-	table tr.order td{
-		border:solid 1px #DDD;
-	}
-	
-	table tr th{
-		background-color:#DDD;
-		text-align:left;
-	}
-	
-	h1, h2{
-		margin:auto;
-		text-align:center;
-	}
-	
-	</style>
+	<link href="/css/print.css" rel="stylesheet"/>
 </head>
 <body>
 	
@@ -75,24 +44,27 @@
 					<!-- name change -->
 					::if orders[i-1]==null || m.userName != orders[i-1].userName::
 						
-						<tr>
-							<td colspan="8" style="font-size:1.3em;">
-								::m.userName:: 
+						<tr class="name">
+							<td colspan="8">
+								<span  style="font-size:1.3em;">::m.userName:: </span>
 								
-								::if m.phone!=null::
-								- Téléphone : ::m.phone::
+								::set u = getUser(m.userId):
+								::if u !=null::
+								- Tél. $$nullSafe(::u.phone::)
 								::end::
+								
+								
 							</td>
 						</tr>
 						<tr>
-							<td>Qté</td>
-							<td>Réf.</td>
-							<td>Produit</td>
-							<td>P.U</td>
-							<td>Sous-total</td>
-							<td>Frais</td>
-							<td>Total</td>
-							<td>Signature</td>
+							<th>Qté</th>
+							<th>Réf.</th>
+							<th>Produit</th>
+							<th>P.U</th>
+							<th>Sous-total</th>
+							<th>Frais</th>
+							<th>Total</th>
+							<th>Signature</th>
 						</tr>
 				
 					::end::
@@ -138,10 +110,10 @@
 					::if (orders[i+1]==null || m.userName != orders[i+1].userName) ::
 					
 						::if subtotal!=0:: 
-						<tr style="border-top:2px solid #DDD;">	
+						<tr>	
 							<td colspan="5"></td>
-							<th class="text-right">TOTAL</th>
-							<th>::formatNum(subtotal)::&nbsp;&euro;</th>					
+							<td class="total text-right">TOTAL</td>
+							<td class="total">::formatNum(subtotal)::&nbsp;&euro;</td>					
 							<td></td>
 							::set subtotal = 0::
 						</tr>
@@ -163,6 +135,6 @@
 				
 				<p>::raw nl2br(user.getAmap().txtDistrib)::</p>
 		
-				<p><i>Appuyez sur "Control + P" pour imprimer cette page.</i></p>
+				<p class="hidden"><i>Appuyez sur "Control + P" pour imprimer cette page.</i></p>
 </body>
 </html>

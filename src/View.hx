@@ -194,5 +194,9 @@ class View extends sugoi.BaseView {
 		return App.current.user.amap.flags.has(db.Amap.AmapFlags.IsAmap)?"Paysan":"Fournisseur";
 	}
 	
+	public function getPlatform(){
+		 return #if neko "Neko" #else "PHP" #end ;
+	}
+	
 	
 }

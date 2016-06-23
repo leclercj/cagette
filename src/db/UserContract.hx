@@ -179,7 +179,7 @@ class UserContract extends Object
 		if (quantity <= 0) return;
 		if (distribId != null) {
 			var d = db.Distribution.manager.get(distribId);
-			if (d.date.getTime() < Date.now().getTime()) throw "Impossible de modifier une commande pour une date de livraison échue. (d"+d.id+")";	
+			if (d.date.getTime() < Date.now().getTime()) throw "Impossible de modifier une commande pour une date de distribution échue. (d"+d.id+")";	
 		}
 		
 		

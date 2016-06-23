@@ -83,7 +83,7 @@
 						::formatNum(m.subTotal)::&nbsp;&euro;
 					</td>
 					<td>
-						<!-- frais -->
+						<!-- fees -->
 						::if m.percentageValue!=null::
 						<a href="#" data-toggle="tooltip" data-placement="top" title="::m.percentageName:: : ::m.percentageValue:: %">
 							::formatNum(m.fees)::&nbsp;&euro;
@@ -108,7 +108,7 @@
 				</tr>
 			
 				<!-- contract total -->
-				::if  ctotal && (orders[i+1]==null || m.contractName != orders[i+1].contractName)::
+				::if  ctotal && (orders[i+1]==null || m.contractName != orders[i+1].contractName || m.userName != orders[i+1].userName )::
 					
 					<tr style="background:#DDD;">					
 						<th colspan="7" class="text-right">Total ::m.contractName::</th>

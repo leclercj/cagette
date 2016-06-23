@@ -287,7 +287,7 @@ class Contract extends Controller
 		if (c.type == db.Contract.TYPE_VARORDER) {
 			distributions = db.Distribution.getOpenToOrdersDeliveries(c);
 			
-			//if ( !args.d.canOrder() ) throw Error("/contract", "Les commandes sont fermées pour cette livraison, impossible de modifier la commande.");
+			//if ( !args.d.canOrder() ) throw Error("/contract", "Les commandes sont fermées pour cette distribution, impossible de modifier la commande.");
 			
 		}else {
 			
@@ -392,7 +392,7 @@ class Contract extends Controller
 	}
 	
 	/**
-	 * Modifier une commande en fonction du jour de livraison (tout fournisseurs confondus)
+	 * Modifier une commande en fonction du jour de distribution (tout fournisseurs confondus)
 	 */
 	@tpl("contract/orderByDate.mtt")
 	function doEditOrderByDate(date:Date) {
@@ -400,7 +400,7 @@ class Contract extends Controller
 		// cannot edit order if date is in the past
 		if (Date.now().getTime() > date.getTime()) {
 			
-			var msg = "Cette livraison a déjà eu lieu, vous ne pouvez plus modifier la commande.";
+			var msg = "Cette distribution a déjà eu lieu, vous ne pouvez plus modifier la commande.";
 			if (app.user.isContractManager()) msg += "<br/>En tant que gestionnaire de contrat vous pouvez modifier une commande depuis la page de gestion des commandes dans <a href='/contractAdmin'>Gestion contrats</a> ";
 			
 			throw Error("/contract", msg);

@@ -79,7 +79,6 @@ class User extends Controller
 			login(user,args.name);
 			
 			throw Redirect("/user/choose/");
-						
 		}
 	}
 	
@@ -89,6 +88,7 @@ class User extends Controller
 		user.ldate = Date.now();
 		user.update();
 		App.current.session.setUser(user);
+		if (App.current.session.data == null) App.current.session.data = {};
 		App.current.session.data.whichUser = (email == user.email) ? 0 : 1; //qui est connecté, user1 ou user2 ?	
 		
 	}
@@ -101,6 +101,7 @@ class User extends Controller
 	function doChoose(?args: { amap:db.Amap } ) {
 		
 		if (app.user == null) throw "Vous n'êtes pas connecté";
+		
 		var amaps = db.UserAmap.manager.search($user == app.user, false);
 		
 		if (amaps.length == 1 && !app.params.exists("show")) {
@@ -111,7 +112,7 @@ class User extends Controller
 		
 		if (args!=null && args.amap!=null) {
 			//select a group
-			var which = app.session.data.whichUser;
+			var which = app.session.data==null ? 0 : app.session.data.whichUser ;
 			app.session.data = {};
 			app.session.data.amapId = args.amap.id;
 			app.session.data.whichUser = which;

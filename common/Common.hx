@@ -154,7 +154,7 @@ class Data {
 					text:"Cette partie de la barre de navigation est visible par tout les adhérents.</br>
 					Elle permet d'accéder aux trois rubriques principales :
 					<ul>
-						<li> La <b>page d'accueil</b> qui permet d'accéder aux commandes et de voir son planning de livraison.</li>
+						<li> La <b>page d'accueil</b> qui permet d'accéder aux commandes et de voir son planning de distribution.</li>
 						<li> La page <b>Mon compte</b> pour mettre à jour mes coordonnées et consulter mon historique de commande</li>
 						<li> La page <b>Mon groupe</b> pour connaître les différents producteurs et coordinateurs de mon groupe
 					</ul>",
@@ -175,7 +175,7 @@ class Data {
 					element:".article .table td:first",
 					text:"Cette rubrique permet d'administrer la liste des adhérents.<br/>
 					A chaque fois que vous saisissez un nouvel adhérent, un compte est créé à son nom. 
-					Il pourra donc se connecter à Cagette.net pour faire des commandes ou consulter son planning de livraison.
+					Il pourra donc se connecter à Cagette.net pour faire des commandes ou consulter son planning de distribution.
 					<p>Cliquez maintenant sur <b>un adhérent</b></p>",
 					action: TAPage("/member/view/*"),
 					placement : TPRight
@@ -203,7 +203,7 @@ class Data {
 						<ul>
 						<li>la liste de produits de ce producteur</li>
 						<li>les commandes des adhérents pour ce producteur</li>
-						<li>planifier les livraisons</li>
+						<li>planifier les distributions</li>
 						</ul>
 					</p>",
 					action: TANext,
@@ -218,7 +218,7 @@ class Data {
 					
 				},{
 					element:"#places",
-					text:"Ici vous pouvez gérer la liste des <b>lieux de livraison/distribution</b>.<br/>
+					text:"Ici vous pouvez gérer la liste des <b>lieux de distribution</b>.<br/>
 					N'oubliez pas de mettre l'adresse complète car une carte s'affiche à partir de l'adresse du lieu.",
 					action: TANext,
 					placement : TPTop
@@ -233,7 +233,7 @@ class Data {
 					element:".table.table-bordered:first",
 					text:"Ici vous avez un récapitulatif du contrat.<br/>Il y a deux types de contrats : <ul>
 					<li>Les contrats AMAP : l'adhérent s'engage sur toute la durée du contrat avec une commande fixe.</li>
-					<li>Les contrats à commande variable : l'adhérent peut commander ce qu'il veut à chaque livraison.</li>
+					<li>Les contrats à commande variable : l'adhérent peut commander ce qu'il veut à chaque distribution.</li>
 					</ul>",
 					action: TANext,
 					placement : TPRight
@@ -252,14 +252,14 @@ class Data {
 					
 				},{
 					element:"#subnav #deliveries",
-					text:"Allons voir maintenant la page de gestion des <b>livraisons</b>",
+					text:"Allons voir maintenant la page de gestion des <b>distributions</b>",
 					action : TAPage("/contractAdmin/distributions/*"),
 					placement:TPRight
 				},{
 					element:".article .table",
-					text:"Ici nous pouvons gérer la liste des livraisons/distributions pour ce producteur<br/>
-					Dans le logiciel une livraison comporte une date avec une heure de début et heure de fin de livraison. 
-					Il faut aussi préciser le lieu de livraison à partir de la liste que nous avons vue précédement.",
+					text:"Ici nous pouvons gérer la liste des distributions pour ce producteur<br/>
+					Dans le logiciel une distribution comporte une date avec une heure de début et heure de fin de distribution. 
+					Il faut aussi préciser le lieu de distribution à partir de la liste que nous avons vue précédement.",
 					action: TANext,
 					placement : TPLeft
 					

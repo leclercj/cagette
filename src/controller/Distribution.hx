@@ -2,6 +2,7 @@ package controller;
 import db.UserContract;
 import sugoi.form.Form;
 import sugoi.form.elements.HourDropDowns;
+using tools.DateTool;
 
 class Distribution extends Controller
 {
@@ -32,7 +33,7 @@ class Distribution extends Controller
 		if (type == null) {
 		
 			var f = new sugoi.form.Form("listBydate", null, sugoi.form.Form.FormMethod.GET);
-			//f.addElement(new sugoi.form.elements.DatePicker("date", "Date de livraison",date));
+			//f.addElement(new sugoi.form.elements.DatePicker("date", "Date de distribution",date));
 			f.addElement(new sugoi.form.elements.RadioGroup("type", "Affichage", [
 				{ key:"one", value:"Une personne par page" },
 				{ key:"all", value:"Tout à la suite" },
@@ -154,7 +155,7 @@ class Distribution extends Controller
 		}
 		
 		view.form = form;
-		view.title = "Modifier une livraison";
+		view.title = "Modifier une distribution";
 	}
 	
 	@tpl('form.mtt')
@@ -184,20 +185,25 @@ class Distribution extends Controller
 		var x = new sugoi.form.elements.HourDropDowns("end", "heure de fin");
 		form.addElement(x, 4);
 		
+		//default values
+		form.getElement("date").value = DateTool.now().deltaDays(30).setHourMinute(19, 0);
+		form.getElement("end").value = DateTool.now().deltaDays(30).setHourMinute(20, 0);
+		
+		
 		if (contract.type == db.Contract.TYPE_VARORDER ) {
-			form.addElement(new sugoi.form.elements.DatePicker("orderStartDate", App.t._("orderStartDate")));	
-			form.addElement(new sugoi.form.elements.DatePicker("orderEndDate", App.t._("orderEndDate")));
+			form.addElement(new sugoi.form.elements.DatePicker("orderStartDate", App.t._("orderStartDate"),DateTool.now().deltaDays(10).setHourMinute(8, 0)));	
+			form.addElement(new sugoi.form.elements.DatePicker("orderEndDate", App.t._("orderEndDate"),DateTool.now().deltaDays(20).setHourMinute(23, 59)));
 		}
 		
 		if (form.isValid()) {
 			
 			form.toSpod(d); //update model
 			d.contract = contract;			
-			var days = Math.floor( d.date.getTime() / 1000 / 60 / 60 / 24 );			
 			if (d.end == null) d.end = DateTools.delta(d.date, 1000.0 * 60 * 60);
 			d.end = new Date(d.date.getFullYear(), d.date.getMonth(), d.date.getDate(), d.end.getHours(), d.end.getMinutes(), 0);
 			
-			if (contract.type == db.Contract.TYPE_VARORDER ) checkDistrib(d);
+			checkDistrib(d);
+			
 			d.insert();
 			throw Ok('/contractAdmin/distributions/'+d.contract.id,'La distribution a été enregistrée');
 		}
@@ -211,10 +217,16 @@ class Distribution extends Controller
 	 * @param	d
 	 */
 	function checkDistrib(d:db.Distribution) {
+		var c = d.contract;
 		
-		if (d.date.getTime() < d.orderEndDate.getTime() ) throw Error('/contractAdmin/distributions/' + d.contract.id, "La date de livraison doit être postérieure à la date de fermeture des commandes");
-		if (d.date.getTime() < d.orderStartDate.getTime() ) throw Error('/contractAdmin/distributions/' + d.contract.id, "La date de livraison doit être postérieure à la date d'ouverture des commandes");
-		if (d.orderStartDate.getTime() > d.orderEndDate.getTime() ) throw Error('/contractAdmin/distributions/' + d.contract.id, "La date de fermeture des commandes doit être postérieure à la date d'ouverture des commandes !");
+		if (d.date.getTime() > c.endDate.getTime()) throw Error('/contractAdmin/distributions/' + c.id, "La date de distribution doit être antérieure à la date de fin du contrat ("+view.hDate(c.endDate)+")");
+		if (d.date.getTime() < c.startDate.getTime()) throw Error('/contractAdmin/distributions/' + c.id, "La date de distribution doit être postérieure à la date de début du contrat ("+view.hDate(c.startDate)+")");
+		
+		if (c.type == db.Contract.TYPE_VARORDER ) {
+			if (d.date.getTime() < d.orderEndDate.getTime() ) throw Error('/contractAdmin/distributions/' + d.contract.id, "La date de distribution doit être postérieure à la date de fermeture des commandes");
+			if (d.orderStartDate.getTime() > d.orderEndDate.getTime() ) throw Error('/contractAdmin/distributions/' + d.contract.id, "La date de fermeture des commandes doit être postérieure à la date d'ouverture des commandes !");
+		
+		}
 		
 		
 	}
@@ -226,18 +238,17 @@ class Distribution extends Controller
 		var form = sugoi.form.Form.fromSpod(d);
 		form.removeElementByName("contractId");
 		
+		form.getElement("startDate").value = DateTool.now();
+		form.getElement("endDate").value  = DateTool.now().deltaDays(30);
+		
 		//start hour
 		form.removeElementByName("startHour");
-		var date = Date.now();
-		var y = date.getFullYear();
-		var m = date.getMonth();
-		var day = date.getDate();
-		
-		var x = new HourDropDowns("startHour", "Heure de début", new Date(y, m, day, 19, 0, 0) , true);
+		var x = new HourDropDowns("startHour", "Heure de début", DateTool.now().setHourMinute( 19, 0) , true);
 		form.addElement(x, 5);
+		
 		//end hour
 		form.removeElement(form.getElement("endHour"));
-		var x = new HourDropDowns("endHour", "Heure de fin", new Date(y, m, day, 20, 0, 0), true);
+		var x = new HourDropDowns("endHour", "Heure de fin", DateTool.now().setHourMinute(20, 0), true);
 		form.addElement(x, 6);
 		
 		if (contract.type == db.Contract.TYPE_VARORDER){
@@ -245,13 +256,13 @@ class Distribution extends Controller
 			form.getElement("daysBeforeOrderStart").value = 10;
 			form.getElement("daysBeforeOrderStart").required = true;
 			form.removeElementByName("openingHour");
-			var x = new HourDropDowns("openingHour", "Heure d'ouverture", new Date(y, m, day, 8, 0, 0) , true);
+			var x = new HourDropDowns("openingHour", "Heure d'ouverture", DateTool.now().setHourMinute(8, 0) , true);
 			form.addElement(x, 8);
 			
 			form.getElement("daysBeforeOrderEnd").value = 2;
 			form.getElement("daysBeforeOrderEnd").required = true;
 			form.removeElementByName("closingHour");
-			var x = new HourDropDowns("closingHour", "Heure de fermeture", new Date(y, m, day, 23, 0, 0) , true);
+			var x = new HourDropDowns("closingHour", "Heure de fermeture", DateTool.now().setHourMinute(23, 0) , true);
 			form.addElement(x, 10);
 			
 		}else{
@@ -265,28 +276,14 @@ class Distribution extends Controller
 		
 		if (form.isValid()) {
 			
-			form.toSpod(d); //update model
-			
-			/*d.startDate = form.getValueOf("startDate");
-			d.startHour = form.getValueOf("startHour");
-			d.endDate = form.getValueOf("endDate");
-			d.endHour = form.getValueOf("endHour");
-			
-			if (contract.type == db.Contract.TYPE_VARORDER){
-				//var a : Date = form.getValueOf("daysBeforeOrderStart");
-				//var h : Date = form.getValueOf("openingHour");
-				//d.daysBeforeOrderStart = new Date(a.getFullYear(), a.getMonth(), a.getDate(), h.getHours(), h.getMinutes(), 0);
-				
-				d.daysBeforeOrderStart = form.getValueOf("daysBeforeOrderStart");
-				d.openingHour = form.getValueOf("closingHour");
-				
-				d.daysBeforeOrderEnd = form.getValueOf("daysBeforeOrderEnd");
-				d.closingHour = form.getValueOf("closingHour");
-				
-			}
-			d.placeId = form.getValueOf("placeId"); */
+			form.toSpod(d); //update model			
 			d.contract = contract;
 			d.insert();
+			
+			var c = contract;
+			if (d.endDate.getTime() > c.endDate.getTime()) throw Error('/distribution/insertCycle/' + c.id, "La date de fin doit être antérieure à la date de fin du contrat ("+view.hDate(c.endDate)+")");
+			if (d.startDate.getTime() < c.startDate.getTime()) throw Error('/distribution/insertCycle/' + c.id, "La date de début doit être postérieure à la date de début du contrat ("+view.hDate(c.startDate)+")");
+		
 			
 			db.DistributionCycle.updateChilds(d);
 			throw Ok('/contractAdmin/distributions/'+d.contract.id,'La distribution a été enregistrée');

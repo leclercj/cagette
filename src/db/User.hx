@@ -207,7 +207,6 @@ class User extends Object {
 		if (App.current.session.data == null ) return null;
 		var a = App.current.session.data.amapId;
 		if (a == null) {
-			//throw handler.Handler.HandlerAction.ActGoto("/user/choose");
 			return null;
 		}else {			
 			return Amap.manager.get(a,false);

@@ -10,7 +10,7 @@
 			<li id="default"><a href="/contractAdmin/view/::c.id::">Récapitulatif</a></li>
 			<li id="edit"><a href="/contract/edit/::c.id::">Modifier contrat</a></li>
 			<li id="products"><a href="/contractAdmin/products/::c.id::">Produits</a></li>			
-			<li id="deliveries"><a href="/contractAdmin/distributions/::c.id::">Livraisons</a></li>
+			<li id="deliveries"><a href="/contractAdmin/distributions/::c.id::">Distributions</a></li>
 			<li id="orders"><a href="/contractAdmin/orders/::c.id::">Commandes</a></li>
 			<li id="stats"><a href="/contractAdmin/stats/::c.id::">Statistiques</a></li>
 		</ul>
