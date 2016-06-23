@@ -124,7 +124,7 @@ class ContractAdmin extends Controller
 	 * displays a calendar of the current month 
 	 * with all events ( contracts start and end, deliveries... )
 	 */
-	@tpl('contractAdmin/calendar.mtt')
+	@tpl('contractadmin/calendar.mtt')
 	public function doCalendar() {
 		
 		var contracts = db.Contract.getActiveContracts(app.user.amap, true, false);	
@@ -152,7 +152,7 @@ class ContractAdmin extends Controller
 				
 				if (cal.exists( start )) {
 					var v = cal.get( start );
-					v.push(		{ name: "Livraison "  +d.contract.name,  color:Calendar.COLOR_DELIVERY } );
+					v.push(		{ name: "Distribution "  +d.contract.name,  color:Calendar.COLOR_DELIVERY } );
 					cal.set( start, v );
 				}
 				
@@ -189,12 +189,12 @@ class ContractAdmin extends Controller
 	 * 
 	 * @param	date
 	 */
-	@tpl('contractAdmin/ordersByDate.mtt')
+	@tpl('contractadmin/ordersByDate.mtt')
 	function doOrdersByDate(?date:Date){
 		if (date == null) {
 		
 			var f = new sugoi.form.Form("listBydate", null, sugoi.form.Form.FormMethod.GET);
-			var el = new sugoi.form.elements.DatePicker("date", "Date de livraison", true);
+			var el = new sugoi.form.elements.DatePicker("date", "Date de distribution", true);
 			el.format = 'LL';
 			f.addElement(el);
 			/*f.addElement(new sugoi.form.elements.RadioGroup("type", "Affichage", [
@@ -206,7 +206,7 @@ class ContractAdmin extends Controller
 			view.form = f;
 			view.title = "Vue globale des commandes";
 			view.text = "Cette page vous permet d'avoir une vision d'ensemble des commandes tout contrats confondus.";
-			view.text += "<br/>Sélectionnez la date de livraison qui vous interesse :";
+			view.text += "<br/>Sélectionnez la date de distribution qui vous interesse :";
 			app.setTemplate("form.mtt");
 			
 			if (f.checkToken()) {
@@ -235,7 +235,7 @@ class ContractAdmin extends Controller
 			var vdistribs = db.Distribution.manager.search(($contractId in cvar) && $date >= d1 && $date <= d2 , false);		
 			var cdistribs = db.Distribution.manager.search(($contractId in cconst) && $date >= d1 && $date <= d2 , false);	
 			
-			if (vdistribs.length == 0 && cdistribs.length == 0) throw Error("/contractAdmin/ordersByDate", "Il n'y a aucune livraison à cette date");
+			if (vdistribs.length == 0 && cdistribs.length == 0) throw Error("/contractAdmin/ordersByDate", "Il n'y a aucune distribution à cette date");
 			
 			
 			//varying orders
@@ -318,7 +318,7 @@ class ContractAdmin extends Controller
 		
 		form.addElement(new StringInput("name","Nom du nouveau contrat : ",contract.name+" - copie "));
 		form.addElement(new Checkbox("copyProducts","Copier les produits",true));
-		form.addElement(new Checkbox("copyDeliveries","Copier les livraisons",true));
+		form.addElement(new Checkbox("copyDeliveries","Copier les distributions",true));
 		
 		if (form.checkToken()) {
 			

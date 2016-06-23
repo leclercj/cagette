@@ -1,15 +1,18 @@
 -lib dbadmin
 -lib templo
+-lib weblog
 -lib sugoi
 -lib hxevents
+-lib cagette-hosted
 -lib hscript
 -lib ufront-mail
--lib thx.semver
 -cp common
 -cp src
 -php www/
 -D spod_macro
 -main App
+-D debugip=localhost:18080
+-D weblogid=cagette
 --next
 -dce no
 -cp common

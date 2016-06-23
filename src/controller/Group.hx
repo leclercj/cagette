@@ -1,5 +1,6 @@
 package controller;
 import sugoi.form.elements.StringInput;
+import sugoi.form.validators.EmailValidator;
 
 
 /**
@@ -92,8 +93,10 @@ class Group extends controller.Controller
 		form.addElement(new sugoi.form.elements.Html("Confirmez votre inscription à \""+group.name+"\""));
 		if (app.user == null){
 			form.addElement(new StringInput("userFirstName", "Votre prénom","",true));
-			form.addElement(new StringInput("userLastName", "Votre nom de famille","",true));
-			form.addElement(new StringInput("userEmail", "Votre email", "", true));		
+			form.addElement(new StringInput("userLastName", "Votre nom de famille", "", true));
+			var em = new StringInput("userEmail", "Votre email", "", true);
+			em.addValidator(new EmailValidator());
+			form.addElement(em);		
 			form.addElement(new StringInput("address", "Adresse", "", true));					
 			form.addElement(new StringInput("zipCode", "Code postal", "", true));		
 			form.addElement(new StringInput("city", "Ville", "", true));		
@@ -161,7 +164,7 @@ class Group extends controller.Controller
 			
 			var amap = new db.Amap();
 			amap.name = f.getValueOf("amapName");
-			amap.txtHome = "Bienvenue sur la cagette de "+amap.name+" !\n Vous pouvez consulter votre planning de livraison ou faire une nouvelle commande.";
+			amap.txtHome = "Bienvenue sur la cagette de "+amap.name+" !\n Vous pouvez consulter votre planning de distribution ou faire une nouvelle commande.";
 			amap.contact = user;
 
 			amap.flags.set(db.Amap.AmapFlags.HasMembership);
@@ -237,7 +240,7 @@ class Group extends controller.Controller
 			
 			var contract = new db.Contract();
 			contract.name = "Contrat Poulet Exemple";
-			contract.description = "Exemple de contrat à commande variable. Il permet de commander quelque chose de différent à chaque livraison.";
+			contract.description = "Exemple de contrat à commande variable. Il permet de commander quelque chose de différent à chaque distribution.";
 			contract.amap  = amap;
 			contract.type = 1;
 			contract.vendor = vendor;

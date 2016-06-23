@@ -25,7 +25,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="App" />
     <option enabledebug="False" />
-    <option additional="&#xA;--next&#xA;-dce no&#xA;-cp common&#xA;-cp js&#xA;-lib sugoi&#xA;-main App&#xA;-js www/js/app.js" />
+    <option additional="&#xA;&#xA;--next&#xA;-dce no&#xA;-cp common&#xA;-cp js&#xA;-lib sugoi&#xA;-main App&#xA;-js www/js/app.js" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -33,6 +33,7 @@
     <library name="templo" />
     <library name="sugoi" />
     <library name="hxevents" />
+    <library name="cagette-hosted" />
     <library name="hscript" />
     <library name="ufront-mail" />
     <library name="thx.semver" />

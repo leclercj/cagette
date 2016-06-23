@@ -188,9 +188,9 @@ class Shop extends sugoi.BaseController
 				if (d.contract.id == cid) data.push( { key:Std.string(d.id), value:view.hDate(d.date)+" - "+d.place.name } );				
 			}
 			if (data.length > 0) {
-				form.addElement(new sugoi.form.elements.RadioGroup("distrib"+cid,"Livraisons",data,data[0].key));	
+				form.addElement(new sugoi.form.elements.RadioGroup("distrib"+cid,"distributions",data,data[0].key));	
 			}else {
-				form.addElement(new sugoi.form.elements.Html("Aucune livraison n'est prévue pour l'instant.","Livraisons"));
+				form.addElement(new sugoi.form.elements.Html("Aucune distribution n'est prévue pour l'instant.","distribution"));
 			}
 			
 			
@@ -289,7 +289,7 @@ class Shop extends sugoi.BaseController
 			for (d in o.distribs) {
 				data.push({key:d.date.toString().substr(0,10),value:d.toString()});
 			}
-			form.addElement(new sugoi.form.elements.RadioGroup("distrib","Livraisons",data,data[0].key));
+			form.addElement(new sugoi.form.elements.RadioGroup("distrib","distributions",data,data[0].key));
 		}
 		
 		view.form = form;

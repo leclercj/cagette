@@ -15,7 +15,7 @@
 				<td>::user._amap.getPeriodNameFromYear(m.year)::</td>
 				<td>::hDate(m.date)::</td>
 				<td>
-					$$delete(Effacer,/membership/delete/::member.id::/::m.year::?token=::token::)
+					$$delete(Effacer,::"/membership/delete/"+member.id+"/"+m.year+"?token="+token::)
 				</td>
 			</tr>
 			::end::		

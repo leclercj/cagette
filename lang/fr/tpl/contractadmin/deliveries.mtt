@@ -1,9 +1,7 @@
 ::use 'contractadmin/design.mtt'::
-
 	
-		<h2>Livraisons</h2>
+		<h2>Distributions</h2>
 		
-			
 			<table class="table">
 				::foreach d deliveries::
 				
@@ -41,17 +39,15 @@
 				
 				::end::
 			</table>				
-			$$insert(Nouvelle livraison,::"/distribution/insert/"+c.id::)
-			$$insert(Livraisons récurrentes,::"/distribution/insertCycle/"+c.id::) 
+
+			$$insert(Nouvelle distribution,::"/distribution/insert/"+c.id::)
+			$$insert(Distributions récurrentes,::"/distribution/insertCycle/"+c.id::) 
+
 			<a href="/contractAdmin/distributionp/::c.id::" class="btn btn-default btn-sm">
-				<span class="glyphicon glyphicon-user"></span> Participations aux livraisons
+				<span class="glyphicon glyphicon-user"></span> Participations aux distributions
 			</a>
 			<a href="/contractAdmin/distributions/::c.id::?old=1" class="btn btn-default btn-sm">
-				Livraisons anciennes
+				Distributions anciennes
 			</a>
-
-	
-	
-
 
 ::end::

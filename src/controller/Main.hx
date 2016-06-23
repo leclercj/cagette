@@ -23,7 +23,10 @@ class Main extends Controller {
 		
 		if (app.user != null) {
 			
-			if(app.user.amap==null) throw Redirect("/user/choose");
+			if (app.user.getAmap() == null) {
+				
+				throw Redirect("/user/choose");
+			}
 
 			view.amap = app.user.getAmap();
 			

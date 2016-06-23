@@ -51,7 +51,7 @@
 			$$delete(Retirer du groupe,::"/member/delete/"+member.id+"?token="+token::)
 			<a href="/member/movetowl/::member.id::" class="btn btn-default btn-sm">Replacer en liste d'attente</a>
 			
-			::if isAdmin::
+			::if user.isAmapManager()::
 			<a href="/member/loginas/::member.id::/::userAmap._amap.id::" class="btn btn-default btn-sm">Se connecter sur ce compte</a>
 			::end::
 		</p>

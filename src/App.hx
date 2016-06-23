@@ -15,12 +15,13 @@ class App extends sugoi.BaseApp {
 	 * Version management
 	 * @doc https://github.com/fponticelli/thx.semver
 	 */ 
-	public static var VERSION = ([0,9,1]  : Version).withPre("RC3-"+#if neko "Neko" #else "PHP" #end);
+	public static var VERSION = ([0,9,1]  : Version).withPre("");
 	
 	public static function main() {
 		
 		App.t = sugoi.form.Form.translator = new sugoi.i18n.translator.TMap(getTranslationArray(), "fr");
 		sugoi.BaseApp.main();
+		
 	}
 	
 	/**
@@ -165,8 +166,8 @@ class App extends sugoi.BaseApp {
 		out.set("Full", "Complet : Le groupe n'accepte plus de nouveaux adhérents");
 		out.set("percent", "Pourcentage");
 		out.set("pinned", "Mets en avant les produits");
-		out.set("daysBeforeOrderStart", "Ouverture de commande (nbre de jours avant livraison)");
-		out.set("daysBeforeOrderEnd", "Fermeture de commande (nbre de jours avant livraison)");
+		out.set("daysBeforeOrderStart", "Ouverture de commande (nbre de jours avant distribution)");
+		out.set("daysBeforeOrderEnd", "Fermeture de commande (nbre de jours avant distribution)");
 		out.set("CagetteNetwork", "Me lister dans l'annuaire des groupes Cagette.net");
 		
 		return out;
@@ -204,5 +205,7 @@ class App extends sugoi.BaseApp {
 		#end
 		return html;
 	}
+	
+	
 	
 }

@@ -7,4 +7,3 @@ lang/fr/tpl/plugin/*
 www/file/*
 tmp/*
 *node_modules*
-/nbproject/private/

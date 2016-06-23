@@ -189,7 +189,7 @@ class Contract extends Object
 	 * @return
 	 */
 	public function getOrders(?d:db.Distribution):Array<db.UserContract> {
-		if (type == TYPE_VARORDER && d == null) throw "Il faut spécifier une livraison pour ce type de contrat";
+		if (type == TYPE_VARORDER && d == null) throw "Il faut spécifier une distribution pour ce type de contrat";
 		
 		//get product ids, some of the products may have been disabled but we keep the order
 		var pids = getProducts(false).map(function(x) return x.id);
@@ -209,7 +209,7 @@ class Contract extends Object
 	 * @return
 	 */
 	public function getUserOrders(u:db.User,?d:db.Distribution):Array<db.UserContract> {
-		if (type == TYPE_VARORDER && d == null) throw "Il faut spécifier une livraison pour ce type de contrat";
+		if (type == TYPE_VARORDER && d == null) throw "Il faut spécifier une distribution pour ce type de contrat";
 
 		var pids = getProducts().map(function(x) return x.id);
 		var ucs = new List<db.UserContract>();
