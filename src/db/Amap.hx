@@ -26,7 +26,7 @@ enum RegOption{
 class Amap extends Object
 {
 	public var id : SId;
-	public var name : SString<32>;
+	public var name : SString<64>;
 	
 	@formPopulate("getMembersFormElementData")
 	@:relation(userId)
@@ -36,6 +36,8 @@ class Amap extends Object
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
 	public var txtDistrib:SNull<SText>; //sur liste d'emargement
 	
+	public var extUrl : SNull<SString<64>>;   //lien sur logo du groupe
+
 	public var membershipRenewalDate : SNull<SDate>;
 	@hideInForms  public var membershipPrice : SNull<STinyInt>;
 	

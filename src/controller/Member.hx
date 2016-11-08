@@ -245,10 +245,11 @@ class Member extends Controller
 	 * @param	user
 	 * @param	amap
 	 */	
+	@admin
 	function doLoginas(user:db.User, amap:db.Amap) {
 	
-		if (!app.user.isAmapManager()) return;
-		if (user.isAdmin()) return;
+		//if (!app.user.isAmapManager()) return;
+		//if (user.isAdmin()) return;
 		
 		App.current.session.setUser(user);
 		App.current.session.data.amapId = amap.id;
@@ -270,8 +271,8 @@ class Member extends Controller
 		form.removeElement( form.getElement("rights") );
 		form.removeElement( form.getElement("lang") );		
 		form.removeElement( form.getElement("ldate") );
-		form.getElement("email").addValidator(new EmailValidator());
-		form.getElement("email2").addValidator(new EmailValidator());
+		form.removeElementByName("email");
+		form.removeElementByName("email2");
 		
 		if (form.checkToken()) {
 			
@@ -279,7 +280,7 @@ class Member extends Controller
 			form.toSpod(member); 
 			
 			//check that the given emails are not already used elsewhere
-			var sim = db.User.getSimilar(form.getValueOf("firstName"), form.getValueOf("lastName"), form.getValueOf("email"), form.getValueOf("firstName2"), form.getValueOf("lastName2"), form.getValueOf("email2"));
+			var sim = db.User.getSameEmail(member.email,member.email2);
 			for ( s in sim) {				
 				if (s.id == member.id) sim.remove(s);
 			}
@@ -299,16 +300,9 @@ class Member extends Controller
 			
 			member.update();
 			
-			if (!App.config.DEBUG) {
+			/*if (!App.config.DEBUG) {
 				//verif changement d'email
 				if (form.getValueOf("email") != member.email) {
-					//var mail = new sugoi.mail.MandrillApiMail();
-					//mail.setSender(App.config.get("default_email"));
-					//mail.setRecipient(member.email);
-					//mail.setSubject("Changement d'email sur votre compte Cagette.net");
-					//mail.setHtmlBody("mail/message.mtt", { text:app.user.getName() + " vient de modifier votre email sur votre fiche Cagette.net.<br/>Votre email est maintenant : "+form.getValueOf("email") } );			
-					//mail.send();	
-					
 					var m = new Email();
 					m.from(new EmailAddress(App.config.get("default_email"),"Cagette.net"));
 					m.to(new EmailAddress(member.email));
@@ -318,23 +312,14 @@ class Member extends Controller
 					
 				}
 				if (form.getValueOf("email2") != member.email2 && member.email2!=null) {
-					//var mail = new sugoi.mail.MandrillApiMail();
-					//mail.setSender(App.config.get("default_email"));
-					//mail.setRecipient(member.email2);
-					//mail.setSubject("Changement d'email sur votre compte Cagette.net");
-					//mail.setHtmlBody("mail/message.mtt", { text:app.user.getName() + " vient de modifier votre email sur votre fiche Cagette.net.<br/>Votre email est maintenant : "+form.getValueOf("email2") } );			
-					//mail.send();
-					
 					var m = new Email();
 					m.from(new EmailAddress(App.config.get("default_email"),"Cagette.net"));
 					m.to(new EmailAddress(member.email2));
 					m.setSubject("Changement d'email sur votre compte Cagette.net");
 					m.setHtml( app.processTemplate("mail/message.mtt", { text:app.user.getName() + " vient de modifier votre email sur votre fiche Cagette.net.<br/>Votre email est maintenant : "+form.getValueOf("email2")  } ) );
 					App.getMailer().send(m);
-					
-					
 				}	
-			}
+			}*/
 			
 			throw Ok('/member/view/'+member.id,'Ce membre a été mis à jour');
 		}
@@ -369,7 +354,7 @@ class Member extends Controller
 	@tpl('form.mtt')
 	function doMerge(user:db.User) {
 		
-		if (!app.user.canAccessMembership()) throw "Vous ne pouvez pas faire ça.";
+		if (!app.user.canAccessMembership()) throw Error("/","Action interdite");
 		
 		view.title = "Fusionner un compte avec un autre";
 		view.text = "Cette action permet de fusionner deux comptes ( quand vous avez des doublons dans la base de données par exemple).<br/>Les contrats du compte 2 seront rattachés au compte 1, puis le compte 2 sera effacé.<br/>Attention cette action n'est pas annulable.";
@@ -486,7 +471,7 @@ class Member extends Controller
 				var lastName2 = r[5];
 				var email2 = r[6];
 				
-				var us = db.User.getSimilar(firstName, lastName, email, firstName2, lastName2, email2);
+				var us = db.User.getSameEmail(email, email2);
 				
 				if (us.length > 0) {
 					unregistred.remove(r);
@@ -552,7 +537,7 @@ class Member extends Controller
 				var lastName2 = u[5];
 				var email2 = u[6];
 				
-				var us = db.User.getSimilar(firstName, lastName, email, firstName2, lastName2, email2);
+				var us = db.User.getSameEmail(email, email2);
 				var userAmaps = db.UserAmap.manager.search($amap == app.user.amap && $userId in Lambda.map(us, function(u) return u.id), false);
 				
 				if (userAmaps.length == 0) {
@@ -585,9 +570,7 @@ class Member extends Controller
 	@tpl("user/insert.mtt")
 	public function doInsert() {
 		
-		//var e = new event.Event();
-		//e.id = "wantToAddMember";
-		//App.current.eventDispatcher.dispatch(e);
+		if (!app.user.canAccessMembership()) throw Error("/","Action interdite");
 		
 		var m = new db.User();
 		var form = sugoi.form.Form.fromSpod(m);
@@ -602,7 +585,7 @@ class Member extends Controller
 		if (form.isValid()) {
 			
 			//check doublon de User et de UserAmap
-			var userSims = db.User.getSimilar(form.getValueOf("firstName"), form.getValueOf("lastName"), form.getValueOf("email"),form.getValueOf("firstName2"), form.getValueOf("lastName2"), form.getValueOf("email2"));
+			var userSims = db.User.getSameEmail(form.getValueOf("email"),form.getValueOf("email2"));
 			view.userSims = userSims;
 			var userAmaps = db.UserAmap.manager.search($amap == app.user.amap && $userId in Lambda.map(userSims, function(u) return u.id), false);
 			view.userAmaps = userAmaps;

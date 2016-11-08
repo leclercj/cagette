@@ -26,6 +26,7 @@
 		</div>
 		::end::
 	
+		<!-- normal mode order forms -->
 		::if !amap.hasShopMode()::
 		<div class="homeBlock" ::cond ( openContracts!=null && openContracts.length>0 )::>
 			<img src="/img/order.png" width="64" height="64" style="float:right;" />
@@ -40,14 +41,14 @@
 		</div>
 		::end::
 	
-	
+		<!-- empty planning -->
 		::if distribs==null || count(distribs)==0::
 			<div class="homeBlock">
 				Votre planning de livraison est vide pour l'instant.<br/>
 			</div>
 		::else::
 			
-			<!-- planning V2 -->
+			
 			::foreach d distribs::
 			
 				::if d.myOrders.length>0::
@@ -66,7 +67,6 @@
 						
 						<div class="pull-right text-right" ::cond d.myOrders[0].distrib._contract.type==1::>
 							::if user._amap.hasShopMode()::
-							
 								::if d.active::
 									<a href="/contract/editOrderByDate/::d.startDate.toString().substr(0,10)::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-edit"></span> Modifier ma commande</a>
 									<a href="/shop/::d.place.id::/::d.startDate.toString().substr(0,10)::" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span> Ajouter des produits</a>
@@ -270,7 +270,13 @@
 	<div class="block" >
 		
 		::if user._amap._image!=null::
-		<img src="::file(user._amap._image)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br/>
+
+		   ::if user._amap.extUrl!=null && user._amap.extUrl!=""::
+		   <a href="::user._amap.extUrl::"><img src="::file(user._amap._image)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br/></a>
+		   ::else::
+		   <img src="::file(user._amap._image)::" style="margin:auto;display: block;width: 100%;" class="thumbnail" /><br/>
+		   ::end::
+
 		::end::
 		
 		::if user._amap.txtHome!=null && user._amap.txtHome!=""::

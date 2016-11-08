@@ -99,7 +99,9 @@ class Main extends Controller {
 		
 		for (d in distribs) {			
 			
-			var o = out.get(d.getKey());
+			//we had the distribution key ( place+date ) and the contract type in order to separate constant and varying contracts
+			var key = d.getKey() + "|" + d.contract.type;
+			var o = out.get(key);
 			if (o == null) o = {place:d.place, startDate:d.date, active:null, endDate:d.end, products:[], myOrders:[], orderStartDate:null,orderEndDate:null};
 			
 			//my orders
@@ -155,8 +157,8 @@ class Main extends Controller {
 				
 				
 			}
-		
-			out.set(d.getKey(), o);
+			
+			out.set(key, o);
 		}
 		
 		//shuffle and limit product lists		

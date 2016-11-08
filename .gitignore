@@ -5,5 +5,7 @@ config.xml
 www/plugin/*
 lang/fr/tpl/plugin/*
 www/file/*
+www/js/app.js
 tmp/*
 *node_modules*
+MakeFile

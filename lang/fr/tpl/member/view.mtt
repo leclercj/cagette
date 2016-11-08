@@ -51,15 +51,14 @@
 			$$delete(Retirer du groupe,/member/delete/::member.id::?token=::token::)
 			<a href="/member/movetowl/::member.id::" class="btn btn-default btn-sm">Replacer en liste d'attente</a>
 			
-			::if user.isAmapManager()::
-			<a href="/member/loginas/::member.id::/::userAmap._amap.id::" class="btn btn-default btn-sm">Se connecter sur ce compte</a>
-			::end::
-			
 			::if !member.isFullyRegistred()::
 			<a href="/member/inviteMember/::member.id::?token=::token::" class="btn btn-default btn-sm">
 				<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
 				Envoyer une invitation</a>
 			::end::
+		</p>
+		<p ::cond user.isAdmin()::>
+			<a href="/member/loginas/::member.id::/::userAmap._amap.id::" class="btn btn-danger btn-xs">Se connecter sur ce compte</a>
 		</p>
 	</div>
 	

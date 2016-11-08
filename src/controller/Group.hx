@@ -52,8 +52,8 @@ class Group extends controller.Controller
 				user.firstName = f.getValueOf("userFirstName");
 				user.lastName = f.getValueOf("userLastName");
 				
-				if ( db.User.getSimilar(user.firstName, user.lastName, user.email).length > 0 ) {
-					throw Ok("/user/login","Vous êtes déjà enregistré dans Cagette.net, Connectez-vous à votre groupe à partir de cette page");
+				if ( db.User.getSameEmail(user.email).length > 0 ) {
+					throw Ok("/user/login","Vous êtes déjà enregistré dans Cagette.net, Connectez-vous à partir de cette page");
 				}
 				
 				user.insert();
@@ -117,8 +117,8 @@ class Group extends controller.Controller
 				user.city = f.getValueOf("city");
 				user.phone = f.getValueOf("phone");
 				
-				if ( db.User.getSimilar(user.firstName, user.lastName, user.email).length > 0 ) {
-					throw Ok("/user/login","Vous êtes déjà enregistré dans Cagette.net, Connectez-vous à votre groupe à partir de cette page");
+				if ( db.User.getSameEmail(user.email).length > 0 ) {
+					throw Ok("/user/login","Vous êtes déjà enregistré dans Cagette.net, Connectez-vous à partir de cette page");
 				}
 				
 				user.insert();				

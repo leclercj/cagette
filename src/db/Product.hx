@@ -60,11 +60,7 @@ class Product extends Object
 		}else {
 			return App.current.view.file(image);
 		}
-		
-		
-		
 	}
-	
 	
 	public function getName(){
 	
@@ -73,8 +69,6 @@ class Product extends Object
 		}else{
 			return name;
 		}
-		
-		
 	}
 	
 	override function toString() {
@@ -83,7 +77,6 @@ class Product extends Object
 		}else {
 			return "produit";
 		}
-		
 	}
 	
 	/**

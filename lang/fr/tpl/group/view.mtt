@@ -10,7 +10,13 @@
 					<p>
 						
 					::if group._image!=null::
-					<img src="::file(group._image)::" class="img-responsive img-thumbnail" /><br/>
+
+                                               ::if group.extUrl!=null && group.extUrl!=""::
+                                               <a href="::group.extUrl::"><img src="::file(group._image)::" class="img-responsive img-thumbnail" /></a><br/>
+                                               ::else::
+                                               <img src="::file(group._image)::" class="img-responsive img-thumbnail" /><br/>
+                                               ::end::
+
 					::end::
 					</p>
 					

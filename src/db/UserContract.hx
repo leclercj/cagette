@@ -147,14 +147,14 @@ class UserContract extends Object
 		}
 		
 		
-		//order by lastname, then contract
+		//order by lastname (+lastname2 if exists), then contract
 		out.sort(function(a, b) {
 			
-			if (a.userName + a.userId + a.contractId > b.userName + b.userId + b.contractId ) {
+			if (a.userName + a.userId + a.userName2 + a.userId2 + a.contractId > b.userName + b.userId + b.userName2 + b.userId2 + b.contractId ) {
 				
 				return 1;
 			}
-			if (a.userName + a.userId + a.contractId < b.userName + b.userId + b.contractId ) {
+			if (a.userName + a.userId + a.userName2 + a.userId2 + a.contractId < b.userName + b.userId + b.userName2 + b.userId2 + b.contractId ) {
 				 
 				return -1;
 			}

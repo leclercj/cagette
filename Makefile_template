@@ -4,9 +4,6 @@ LANG=fr
 compile:
 	haxe cagette.hxml
 
-css:
-	hss hss/*.hss -output www/css/
-
 templates:
 	(cd lang/$(LANG)/tpl; temploc2 -macros macros.mtt -output ../tmp/ *.mtt */*.mtt */*/*.mtt */*/*/*.mtt)
 
@@ -23,17 +20,7 @@ deploy_site:
 deploy_tpl:
 	rsync $(ROPTS) lang/$(LANG) www-data@www.cagette.net:/data/cagette/lang/
 	
-bundle:
-	@make LANG=fr templates
-	haxe cagette.hxml
-	rm -rf www/file/*.*
-	tar -cvf cagette.tar www config.xml.dist lang data --exclude www/bower_components/bootstrap/node_modules
-	scp cagette.tar www-data@cagette.net:/data/cagetteSite/www/
-	
-cp_plugin:
-	cp -R lang/fr/tpl/plugin/hosted/* ~/projects/haxeLibs/cagette-hosted/git/src/hosted/lang/fr/tpl/hosted/
-	cp -R lang/fr/tpl/plugin/pro/* ~/projects/haxeLibs/cagette-pro/git/src/pro/lang/fr/tpl/
-	cp -R lang/fr/tpl/plugin/connector/* ~/projects/haxeLibs/cagette-connector/git/src/connector/lang/fr/tpl/
+
 	
 
 	

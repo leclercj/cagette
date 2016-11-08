@@ -25,11 +25,20 @@ class Amap extends Controller
 		
 		if (!app.user.isAmapManager()) throw "Vous n'avez pas accès a cette section";
 		
-		var form = Form.fromSpod(app.user.amap);
+		var group = app.user.amap;
+		
+		var form = Form.fromSpod(group);
 	
 		if (form.checkToken()) {
-			form.toSpod(app.user.amap);
-			app.user.amap.update();
+			form.toSpod(group);
+			
+			if (group.extUrl != null){
+				if ( group.extUrl.indexOf("http://") ==-1 &&  group.extUrl.indexOf("https://") ==-1 ){
+					group.extUrl = "http://" + group.extUrl;
+				}
+			}
+			
+			group.update();
 			throw Ok("/amapadmin", "Groupe mis à jour.");
 		}
 		

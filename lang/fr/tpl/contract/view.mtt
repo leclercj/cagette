@@ -22,11 +22,13 @@
 			<table class="product">
 				<tr>
 					<td style="vertical-align:top;">
-						<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.name)::')" ><img src="::p.getImage()::" style="width:64px;height:64px;" /></a>	
+						<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.getName())::')" >
+							<img src="::p.getImage()::" style="width:64px;height:64px;" />							
+						</a>	
 					</td>
 					<td>
 						<h4>
-							<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.name)::')" href="#">::p.name::</a>
+							<a onclick="_.overlay('/shop/productInfo/::p.id::','::escapeJS(p.getName())::')" href="#">::p.getName()::</a>
 						</h4>
 						<span class="price">::formatNum(p.getPrice())::&nbsp;::currency()::</span>
 						<div>

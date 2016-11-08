@@ -28,6 +28,7 @@
 	::end::
 	
 	::set name = ""::
+	::set name2 = ""::
 	::set total = 0::
 	::set productNum = 0::
 	
@@ -35,7 +36,7 @@
 	
 	::foreach m orders::
 	
-		::if m.userName != name::
+		::if m.userName != name || m.userName2 != name2::
 		
 			::if name != ""::
 			::raw "</table> <hr />"::
@@ -48,27 +49,34 @@
 		::end::
 				
 		
-				::if m.userName != name::
+				::if m.userName != name || m.userName2 != name2::
 					::set class="name"::
 				::else::
 					::set class=""::
 				::end::
 				<tr class="::class::">
 					<td>
-						::if m.userName != name::
-							<b>
-								::m.userName:: 
+						::if m.userName != name || m.userName2 != name2::
+								<b>::m.userName::</b>
+								::if m.userName2 != null::
+									<br />en alternance avec <b>::m.userName2::</b>
+								::end::
 								::set total = 0::
 								::set productNum = 0::
-							</b>
 						::end::
 						
 					</td>
 					<td>
-						::if m.userName != name::
+						::if m.userName != name || m.userName2 != name2::
 							::set u = getUser(m.userId):
 							::if u !=null::
 							$$nullSafe(::u.phone::)
+							::end::
+							::if m.userName2 != null::
+								::set u = getUser(m.userId2):
+								::if u !=null::
+								<br />$$nullSafe(::u.phone::)
+								::end::
 							::end::
 						::end::
 						
@@ -102,10 +110,11 @@
 					</td>
 				</tr>
 				::set name =  m.userName ::
-				
+				::set name2 =  m.userName2 ::
+
 				<!--TOTAL-->
 				::set next = orders[repeat.m.index+1]::
-				::if next==null || next.userName!=name::
+				::if next==null || next.userName!=name || next.userName2!=name2::
 				<tr>
 						<td></td>
 						<td></td>

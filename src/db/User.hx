@@ -321,14 +321,9 @@ class User extends Object {
 	}
 	
 	/**
-	 * recherche des users similaires 
-	 * @param	amapId
-	 * @param	firstName
-	 * @param	lastName
-	 * @param	email
-	 * @return
+	 * Search for similar users in the DB ( same firstName+lastName or same email )
 	 */
-	public static function getSimilar(firstName:String, lastName:String, email:String,?firstName2:String, ?lastName2:String, ?email2:String):List<db.User> {
+	public static function __getSimilar(firstName:String, lastName:String, email:String,?firstName2:String, ?lastName2:String, ?email2:String):List<db.User> {
 		var out = new Array();
 		out = Lambda.array(User.manager.search($firstName.like(firstName) && $lastName.like(lastName), false));
 		out = out.concat(Lambda.array(User.manager.search($email.like(email), false)));
@@ -343,10 +338,9 @@ class User extends Object {
 		if (email2 != null && email2 != "") {
 			out = out.concat(Lambda.array(User.manager.search($email.like(email2), false)));
 			out = out.concat(Lambda.array(User.manager.search($email2.like(email2), false)));	
-		}
+		}		
 		
-		
-		//dedoublage
+		//dedouble
 		var x = new Map<Int,db.User>();
 		for ( oo in out) {
 			x.set(oo.id, oo);
@@ -354,11 +348,34 @@ class User extends Object {
 		return Lambda.list(x);
 	}
 	
+	/**
+	 * Search for similar users in the DB ( same email )
+	 */
+	public static function getSameEmail(email:String, ?email2:String){
+		
+		var out = new Array();
+		out = out.concat(Lambda.array(User.manager.search($email.like(email), false)));
+		out = out.concat(Lambda.array(User.manager.search($email2.like(email), false)));
+		if (email2 != null && email2 != "") {
+			out = out.concat(Lambda.array(User.manager.search($email.like(email2), false)));
+			out = out.concat(Lambda.array(User.manager.search($email2.like(email2), false)));	
+		}
+		return Lambda.list(out);
+	}
+	
 	
 	public static function getUsers_NoContracts(?index:Int,?limit:Int):List<db.User> {
 		var productsIds = App.current.user.getAmap().getProducts().map(function(x) return x.id);
 		var uc = UserContract.manager.search($productId in productsIds, false);
 		var uc2 = uc.map(function(x) return x.userId); //liste des userId avec un contrat dans cette amap
+
+		// J. Le Clerc - BUGFIX#1 Ne pas oublier les contrats alternés
+		for (u in uc) {
+			if (u.user2 != null) {
+				uc2.add(u.user2.id);
+			}
+		}
+
 		//les gens qui sont dans cette amap et qui n'ont pas de contrat de cette amap
 		var ua = db.UserAmap.manager.unsafeObjects("select * from UserAmap where amapId=" + App.current.user.getAmap().id +" and userId NOT IN(" + uc2.join(",") + ")", false);						
 		return Lambda.map(ua, function(x) return x.user);	

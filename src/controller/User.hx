@@ -162,8 +162,15 @@ class User extends Controller
 	
 		//change pass form
 		var chpassform = new Form("chpass");
-		chpassform.addElement(new StringInput("pass1","Votre nouveau mot de passe"));
-		chpassform.addElement(new StringInput("pass2", "Retapez votre mot de passe pour vérification"));
+		
+		var pass1 = new StringInput("pass1", "Votre nouveau mot de passe");
+		pass1.password = true;
+		chpassform.addElement(pass1);
+		
+		var pass2 = new StringInput("pass2", "Retapez votre mot de passe pour vérification");
+		pass2.password = true;
+		chpassform.addElement(pass2);
+		
 		var uid = new IntInput("uid","uid", u == null?null:u.id);
 		uid.inputType = ITHidden;
 		chpassform.addElement(uid);
@@ -240,8 +247,12 @@ class User extends Controller
 		if (app.user.isFullyRegistred()) throw Error("/","Vous avez déjà un mot de passe");
 
 		var form = new Form("definepass");
-		form.addElement(new StringInput("pass1","Votre nouveau mot de passe"));
-		form.addElement(new StringInput("pass2", "Retapez votre mot de passe pour vérification"));		
+		var pass1 = new StringInput("pass1", "Votre nouveau mot de passe");
+		var pass2 = new StringInput("pass2", "Retapez votre mot de passe pour vérification");
+		pass1.password = true;
+		pass2.password = true;
+		form.addElement(pass1);
+		form.addElement(pass2);
 		
 		if (form.isValid()) {
 			

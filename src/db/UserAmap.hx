@@ -3,12 +3,15 @@ import sys.db.Object;
 import sys.db.Types;
 
 enum Right{
-	AmapAdmin;		//accès à l'admin d'amap
-	ContractAdmin(?cid:Int);	//accès à la gestion de contrat
-	Membership;		//accès a la gestion de adhérents
-	Messages;		//accès à la messagerie
+	AmapAdmin;					//can manage whole group
+	ContractAdmin(?cid:Int);	//can manage one or all contracts
+	Membership;					//can manage group members
+	Messages;					//can send messages
 }
 
+/**
+ * A user which is member of a group
+ */
 @:id(userId,amapId)
 class UserAmap extends Object
 {
@@ -24,12 +27,8 @@ class UserAmap extends Object
 	public var userId : SInt;
 	#end
 	
-	//public var lastMemberShip : SNull<SDate>;
 	public var rights : SNull<SData<Array<Right>>>;
-	
-
 	static var CACHE = new Map<String,db.UserAmap>();
-	
 	
 	public static function get(user:User, amap:Amap, ?lock = false) {
 		//SPOD doesnt cache elements with double primary key, so lets do it manually
@@ -41,7 +40,9 @@ class UserAmap extends Object
 		return c;	
 	}	
 	
-	
+	/**
+	 * give right and update DB
+	 */
 	public function giveRight(r:Right) {
 	
 		if (hasRight(r)) return;
@@ -49,21 +50,21 @@ class UserAmap extends Object
 		lock();
 		rights.push(r);
 		update();
-		
 	}
-	
+		
+	/**
+	 * remove right and update DB
+	 */
 	public function removeRight(r:Right) {	
 		if (rights == null) return;
 		var newrights = [];
 		for (right in rights.copy()) {
 			if ( !Type.enumEq(right, r) ) {
-				//App.log("remove "+r);
-				//rights.remove(r);
 				newrights.push(right);
 			}
 		}
 		rights = newrights;
-		
+		update();
 	}
 	
 	public function hasRight(r:Right):Bool {
@@ -77,10 +78,10 @@ class UserAmap extends Object
 	
 	public function getRightName(r:Right):String {
 		return switch(r) {
-		case AmapAdmin : "Administrateur";
-		case Messages : "Messagerie";
-		case Right.Membership : "Gestion adhérents";
-		case ContractAdmin(cid) : 
+		case Right.AmapAdmin 	: "Administrateur";
+		case Right.Messages 	: "Messagerie";
+		case Right.Membership 	: "Gestion adhérents";
+		case Right.ContractAdmin(cid) : 
 			if (cid == null) {
 				"Gestion de tous les contrats";
 			}else {
@@ -89,34 +90,16 @@ class UserAmap extends Object
 		}
 	}
 	
-	
-	/**
-	 * Est ce que ce membre est a jour de sa cotisation
-	 * @return
-	 */
 	public function hasValidMembership():Bool {
 		
 		if (amap.membershipRenewalDate == null) return false;
-		
-
 		var cotis = db.Membership.get(this.user, this.amap, this.amap.getMembershipYear());
-		
 		return cotis != null;
-
-		////trouve la date la plus recente de renouvellement de cotisation
-		//var lastRenewal = amap.membershipRenewalDate;
-		//lastRenewal =  new Date(Date.now().getFullYear(), lastRenewal.getMonth(), lastRenewal.getDate(),0,0,0);
-		//if (lastRenewal.getTime() > Date.now().getTime()) {
-			//lastRenewal =  new Date(Date.now().getFullYear()-1, lastRenewal.getMonth(), lastRenewal.getDate(),0,0,0);
-		//}
-		//
-		//return (lastMemberShip.getTime() > lastRenewal.getTime());
 	}
 	
 	override public function insert(){
 		
 		App.current.event(NewMember(this.user,this.amap));
-		
 		super.insert();
 	}
 	

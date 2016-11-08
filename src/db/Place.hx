@@ -11,8 +11,8 @@ class Place extends Object
 	public var zipCode:SString<32>;
 	public var city:SString<25>;
 	//latitude/longitude
-	public var lat:SNull<SFloat>;
-	public var lng:SNull<SFloat>;
+	@hideInForms public var lat:SNull<SFloat>;
+	@hideInForms public var lng:SNull<SFloat>;
 	@hideInForms @:relation(amapId) public var amap : Amap;
 	
 	

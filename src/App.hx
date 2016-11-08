@@ -96,6 +96,8 @@ class App extends sugoi.BaseApp {
 		out.set("txtIntro", "Texte de présentation du groupe");
 		out.set("txtHome", "Texte en page d'accueil pour les adhérents connectés");
 		out.set("txtDistrib", "Texte à faire figurer sur les listes d'émargement lors des distributions");
+		out.set("extUrl", "URL du site du groupe.");
+		
 		out.set("distributor1", "Distributeur 1");
 		out.set("distributor2", "Distributeur 2");
 		out.set("distributor3", "Distributeur 3");
