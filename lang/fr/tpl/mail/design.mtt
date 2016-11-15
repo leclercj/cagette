@@ -6,7 +6,7 @@
 <hr/>
 
 <div style="color:#666;font-size:12px;">
-	Cet e-mail a été envoyé depuis <a href="http://www.cagette.net">Cagette.net</a>.
+	Cet e-mail a été envoyé depuis <a href="http://::HOST::">Cagette.net</a>.
 
 	::if group!=null::
 		<br/>

@@ -122,22 +122,20 @@ class Cron extends Controller
 		var distribsByContractId = new Map<Int,db.Distribution>();
 		for (d in distribs) distribsByContractId.set(d.contract.id, d);
 		
-		var contracts = Lambda.map(distribs, function(d) return d.contract);
-		var products = [];
-		for ( c in contracts) {
-			products = products.concat(Lambda.array(c.getProducts()));
+		//Boucle sur les distributions pour gerer le cas de plusieurs distributions le même jour sur le même contrat
+		var orders = [];
+		for (d in distribs) {
+			var products = Lambda.array(d.contract.getProducts());
+			var productsId = products.map(function(p) return p.id);
+
+			//chope les commandes liées a cette distrib
+			var orders2 = db.UserContract.manager.search($productId in productsId, false);
+			orders = orders.concat(Lambda.array(orders2));
 		}
-		var productsId = products.map(function(p) return p.id);
-		
-		//chope les commandes liées a cette distrib
-		var orders = db.UserContract.manager.search($productId in productsId, false);
-		
-		//groupe les commande par user 
+
+		//groupe les commandes par user
 		var users = new Map< Int,  {user:db.User,distrib:db.Distribution,products:Array<db.UserContract>} >();
 		for (o in orders) {
-			var x = users.get(o.userId);
-			if (x == null) x = {user:o.user,distrib:null,products:[]};
-			
 			if (o.product.contract.type == db.Contract.TYPE_VARORDER) {
 				//commande variable
 				if (o.distributionId != distribsByContractId.get(o.product.contract.id).id) {
@@ -146,10 +144,21 @@ class Cron extends Controller
 				}
 			}
 			
+			var x = users.get(o.userId);
+			if (x == null) x = {user:o.user,distrib:null,products:[]};
 			x.distrib = distribsByContractId.get(o.product.contract.id);
 			x.products.push(o);
-			
 			users.set(o.userId, x);
+
+			// Prévenir également le deuxième user en cas des commandes alternées
+			if (o.user2 != null) {
+				var x = users.get(o.user2.id);
+				if (x == null) x = {user:o.user2,distrib:null,products:[]};
+				x.distrib = distribsByContractId.get(o.product.contract.id);
+				x.products.push(o);
+				users.set(o.user2.id, x);
+			}
+
 		}
 		
 		
@@ -170,7 +179,16 @@ class Cron extends Controller
 					var text = "N'oubliez pas la distribution : <b>" + view.hDate(u.distrib.date) + "</b><br>";
 					text += "Vos produits à récupérer :<br><ul>";
 					for ( p in u.products) {
-						text += "<li>"+p.quantity+" x "+p.product.name+"</li>";
+						text += "<li>"+p.quantity+" x "+p.product.name;
+						// Gerer le cas des contrats en alternance
+						if (p.user2 != null) {
+							text += " en alternance avec ";
+							if (u.user == p.user)
+								text += p.user2.getCoupleName();
+							else
+								text += p.user.getCoupleName();
+						}
+						text += "</li>";
 					}
 					text += "</ul>";
 					
@@ -190,7 +208,7 @@ class Cron extends Controller
 					m.from(new EmailAddress(App.config.get("default_email"),"Cagette.net"));					
 					m.to(new EmailAddress(u.user.email, u.user.getName()));					
 					if(u.user.email2!=null) m.cc(new EmailAddress(u.user.email2));
-					m.setSubject( group+" : Distribution à " + app.view.hDate(u.distrib.date) );
+					m.setSubject( group+" : Distribution " + app.view.hDate(u.distrib.date) );
 					m.setHtml( app.processTemplate("mail/message.mtt", { text:text } ) );
 					
 					try {
