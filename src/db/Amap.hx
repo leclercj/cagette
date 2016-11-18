@@ -9,6 +9,7 @@ enum AmapFlags {
 	IsAmap; 		//Amap / groupement d'achat
 	ComputeMargin;	//compute margin instead of percentage
 	CagetteNetwork; //register in cagette.net groups directory
+	HidePhone; 	//Masquer le téléphone du responsable de l'amap sur la page publique
 }
 
 //user registration options
@@ -26,23 +27,17 @@ enum RegOption{
 class Amap extends Object
 {
 	public var id : SId;
-	/** J. Le Clerc - ENHANCEMENT#1
-	* Augmenter la taille max du nom. Le nom de notre AMAP dépasse 32 caractères
-	*/
+
 	public var name : SString<64>;
 	
 	@formPopulate("getMembersFormElementData")
 	@:relation(userId)
 	public var contact : SNull<User>;
-	
+
 	public var txtIntro:SNull<SText>; 	//introduction de l'amap
 	public var txtHome:SNull<SText>; 	//texte accueil adhérents
 	public var txtDistrib:SNull<SText>; //sur liste d'emargement
 	
-	/** J. Le Clerc - FEATURE#1
-	 * Ajouter une URL optionelle qui correspond à site externe du groupe.
-	 * Permet une meilleur transition/integration avec un site externe si il en existe un.
-	 */
 	public var extUrl : SNull<SString<64>>;   //lien sur logo du groupe
 
 	public var membershipRenewalDate : SNull<SDate>;
@@ -69,7 +64,6 @@ class Amap extends Object
 		vatRates = ["TVA Alimentaire 5,5%" => 5.5, "TVA 20%" => 20];
 		cdate = Date.now();
 		regOption = WaitingList;
-		
 	}
 	
 	/**
@@ -115,6 +109,10 @@ class Amap extends Object
 		return flags.has(ShopMode);
 	}
 	
+	public function canExposePhone() {
+		return !flags.has(HidePhone);
+	}
+
 	public function getCategoryGroups() {
 		return db.CategoryGroup.get(this);
 	}

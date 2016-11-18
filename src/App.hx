@@ -96,11 +96,6 @@ class App extends sugoi.BaseApp {
 		out.set("txtIntro", "Texte de présentation du groupe");
 		out.set("txtHome", "Texte en page d'accueil pour les adhérents connectés");
 		out.set("txtDistrib", "Texte à faire figurer sur les listes d'émargement lors des distributions");
-
-		/** J. Le Clerc - FEATURE#1
-		 * Ajouter une URL optionelle qui correspond à site externe du groupe.
-		 * Permet une meilleur transition/integration avec un site externe si il en existe un.
-		 */
 		out.set("extUrl", "URL externe. Permet d'ajouter un lien de navigation avec le logo");
 
 		out.set("distributor1", "Distributeur 1");
@@ -119,6 +114,8 @@ class App extends sugoi.BaseApp {
 		out.set("active", "actif");	
 		
 		out.set("contact", "Reponsable");
+		out.set("HidePhone", "Masquer le téléphone du résponsable sur la page publique");
+
 		out.set("vendor", "Producteur");
 		out.set("text", "Texte");
 		out.set("flags", "Options");
@@ -160,6 +157,7 @@ class App extends sugoi.BaseApp {
 		out.set("Messages", "Accès à la messagerie");
 		out.set("vat", "TVA");
 		out.set("desc", "Description");
+		out.set("description", "Description");
 		out.set("ShopMode", "Mode boutique");
 		out.set("IsAmap", "Votre groupe est une AMAP");
 		out.set("ComputeMargin", "Appliquer une marge à la place des pourcentages");
