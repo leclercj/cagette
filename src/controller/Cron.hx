@@ -75,14 +75,16 @@ class Cron extends Controller
 	
 	function alerts(hour:Int,flag:db.User.UserFlags) {
 		
-		//trouve les distrib qui se font dans 4h
-		var d = DateTools.delta(Date.now(), 1000 * 60 * 60 * hour); //dans 4h
-		var h = DateTools.delta(Date.now(), 1000 * 60 * 60 * (hour+1) ); //dans 5h
-		//distribs ayent lieu de dans 4h à dans 5h
+		//trouve les distrib qui commencent dans le nombre d'heures demandé
+		//on recherche celles qui commencent jusqu'à une heure avant pour ne pas en rater 
+		var d = DateTools.delta(Date.now(), 1000 * 60 * 60 * (hour-1));
+		var h = DateTools.delta(Date.now(), 1000 * 60 * 60 * hour);
 		var distribs = db.Distribution.manager.search( $date >= d && $date <=h , false);
 		//var distribs = db.Distribution.manager.search( $date > h , false); //TEST
 		App.log(distribs);
-		
+		//on s'arrete immédiatement si aucune distibution trouvée
+		if (distribs.length == 0) return;
+
 		//cherche plus tard si on a pas une "grappe" de distrib
 		while (true) {
 			var extraDistribs = db.Distribution.manager.search( $date >= h && $date <DateTools.delta(h,1000.0*60*60) , false);
