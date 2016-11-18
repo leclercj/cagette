@@ -30,7 +30,7 @@ class App extends sugoi.BaseApp {
 		eventDispatcher = new hxevents.Dispatcher<Event>();
 		plugins = [ new plugin.Tutorial() ];
 		#if plugins
-		//Gestion expérimentale de plugin. Si ça ne complile pas, commentez les lignes ci-dessous
+		//Gestion expérimentale de plugin. Si ça ne compile pas, commentez les lignes ci-dessous
 		plugins.push( new hosted.HostedPlugIn() );
 		plugins.push( new pro.ProPlugIn() );
 		plugins.push( new connector.ConnectorPlugIn() );
@@ -102,7 +102,7 @@ class App extends sugoi.BaseApp {
 		out.set("distributor2", "Distributeur 2");
 		out.set("distributor3", "Distributeur 3");
 		out.set("distributor4", "Distributeur 4");
-		out.set("distributorNum", "Nbre de distributeurs nécéssaires (de 0 à 4)");
+		out.set("distributorNum", "Nbre de distributeurs nécessaires (de 0 à 4)");
 		
 		out.set("startDate", "Date de début");
 		out.set("endDate", "Date de fin");
@@ -113,7 +113,7 @@ class App extends sugoi.BaseApp {
 		out.set("date", "Date de distribution");	
 		out.set("active", "actif");	
 		
-		out.set("contact", "Reponsable");
+		out.set("contact", "Responsable");
 		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 
 		out.set("vendor", "Producteur");

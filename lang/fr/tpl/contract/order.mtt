@@ -42,7 +42,10 @@
 						<img src="::uo.product.getImage()::" style="width:32px;height:32px;" />
 					</td>
 					<td>
-						<a href="#" onclick="_.overlay('/shop/productInfo/::uo.product.id::')">::uo.product.name::	</a>
+						<a href="#" onclick="_.overlay('/shop/productInfo/::uo.product.id::')">::uo.product.name::</a>
+							::if uo.product._unitType!=null::
+							::uo.product.qt::&nbsp;::unit(uo.product._unitType)::
+							::end::
 					</td>
 					<td>
 						::set price = uo.product.price + uo.product._contract.computeFees(uo.product.price)::
@@ -111,6 +114,7 @@
 				::end::
 			</tr>
 		</table>
+		<i>Note: Pour effacer une commande, saisissez une quantité égale à 0</i><br/><br/>
 		
 		<input type="submit" class="btn btn-primary" value="Valider la commande" name="submit" id="submit" />		
 			
@@ -123,9 +127,7 @@
 		Producteur : <b>::c._vendor.name::</b>
 		<br/>
 		<br/>
-		Responsable : <b>::c._contact.getName()::</b><br/>
-		::c._contact.phone::<br/>
-		::c._contact.email::<br/>
+		Responsable : $$contact(::c._contact::)
 	</div>
 </div>
 

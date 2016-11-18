@@ -58,7 +58,12 @@
 				::foreach p contract.getProducts(true)::
 				<tr>
 					<td><img src="::p.getImage()::" style="width:32px;height:32px;" />	</td>
-					<td>::p.name::</td>
+					<td>
+					<a href="#" onclick="_.overlay('/shop/productInfo/::p.id::')">::p.name::</a>
+					::if p._unitType!=null::
+					::p.qt::&nbsp;::unit(p._unitType)::
+					::end::
+					</td>
 					<td>::formatNum(p.price)::&nbsp;&euro;</td>					
 				</tr>
 				::end::
