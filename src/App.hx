@@ -114,7 +114,7 @@ class App extends sugoi.BaseApp {
 		out.set("active", "actif");	
 		
 		out.set("contact", "Reponsable");
-		out.set("HidePhone", "Masquer le téléphone du résponsable sur la page publique");
+		out.set("HidePhone", "Masquer le téléphone du responsable sur la page publique");
 
 		out.set("vendor", "Producteur");
 		out.set("text", "Texte");

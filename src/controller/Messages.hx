@@ -107,12 +107,8 @@ class Messages extends Controller
 	@tpl("messages/message.mtt")
 	public function doMessage(msg:Message) {
 		if (!app.user.isAmapManager() && msg.sender.id != app.user.id) throw Error("/", "accès non autorisé");
-		
-		var lists2 = new Map<String,String>();
-		for (l in getLists()) lists2.set(l.label, l.value);
-		
-		view.lists = lists2;		
-		view.list = lists2.get(msg.recipientListId);
+
+		view.list = getListName(msg.recipientListId);
 		view.msg = msg;
 		
 	}
@@ -120,10 +116,10 @@ class Messages extends Controller
 	function getLists() :FormData<String>{
 		var out = [
 			{value:'1', label:'Tout le monde' },
-			{value:'2', label:'Les responsables contrat et le responsable d\'AMAP' },			
+			{value:'2', label:'Le bureau = les responsables AMAP + contrats + adhésions' },
 		];
 		
-		/*if (App.config.DEBUG)*/ out.push( { value:'3', label:'TEST : moi + conjoint(e)' } );
+		out.push( { value:'3', label:'TEST : moi + conjoint(e)' } );
 		out.push( { value:'4', label:'Amapiens sans contrat' } );
 		if(app.user.amap.hasMembership()) out.push( { value:'5', label:'Adhésions à renouveller' } );
 		
@@ -183,10 +179,18 @@ class Messages extends Controller
 			case "2":
 				
 				var users = [];
+				//le responsable AMAP
 				users.push(app.user.amap.contact);
+				//les responsables Contrats
 				for ( c in db.Contract.manager.search($amap == app.user.amap)) {
 					if (!Lambda.has(users, c.contact)) {
 						users.push(c.contact);
+					}
+				}
+				//ajouter les autres personnes ayant les droits Admin ou Gestion Adhérents ou Gestion Contrats
+				for (ua in Lambda.array(db.UserAmap.manager.search($rights != null && $amap == app.user.amap, false))) {
+					if (ua.hasRight(AmapAdmin) || ua.hasRight(Membership) || ua.hasRight(ContractAdmin())) {
+						if (!Lambda.has(users, ua.user)) users.push(ua.user);
 					}
 				}
 				out = users;
